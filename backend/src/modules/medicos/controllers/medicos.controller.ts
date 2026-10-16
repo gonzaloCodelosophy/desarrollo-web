@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { MedicosService } from "../services/medicos.service.js";
 import { MedicoDTO } from "../dtos/output/medico.dto.js";
@@ -29,7 +29,7 @@ export class MedicosController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolUsuarioEnum.ADMINISTRADOR)
     @Patch(':id/valor-consulta')
-    async actualizarValorConsulta(@Param('id') id: number, @Body() dto: UpdateValorConsultaDto): Promise<void> {
+    async actualizarValorConsulta(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateValorConsultaDto): Promise<void> {
 
         await this.service.actualizarValorConsulta(id, dto);
     }

@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 import { ReservasService } from "../services/reservas.service.js";
 import { CreateReservaDto } from "../dtos/input/create-reserva.dto.js";
+import { CreateReservaResponseDto } from "../dtos/output/create-reserva-response.dto.js";
 import { ListReservasQueryDto } from "../dtos/input/list-reservas-query.dto.js";
 import { ReservaDTO } from "../dtos/output/reserva.dto.js";
 import { AuthGuard } from "../../auth/guards/auth.guard.js";
@@ -19,10 +20,11 @@ export class ReservasController {
 
     @ApiOperation({ summary: 'Reserva un turno (pacientes para sí mismos, administradores para cualquier paciente)' })
     @ApiBearerAuth()
+    @ApiCreatedResponse({ type: CreateReservaResponseDto })
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
     @Post()
-    async crearReserva(@Body() dto: CreateReservaDto, @Req() request: Request): Promise<{ id: number }> {
+    async crearReserva(@Body() dto: CreateReservaDto, @Req() request: Request): Promise<CreateReservaResponseDto> {
 
         return await this.service.crearReserva(dto, this.currentUser(request));
     }
@@ -42,7 +44,7 @@ export class ReservasController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
     @Patch(':id/cancelar')
-    async cancelarReserva(@Param('id') id: number, @Req() request: Request): Promise<void> {
+    async cancelarReserva(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
 
         await this.service.cancelarReserva(id, this.currentUser(request));
     }
@@ -52,7 +54,7 @@ export class ReservasController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolUsuarioEnum.MEDICO)
     @Patch(':id/atender')
-    async marcarAtendido(@Param('id') id: number, @Req() request: Request): Promise<void> {
+    async marcarAtendido(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
 
         await this.service.marcarAtendido(id, this.currentUser(request));
     }
@@ -62,7 +64,7 @@ export class ReservasController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolUsuarioEnum.MEDICO)
     @Patch(':id/ausente')
-    async marcarAusente(@Param('id') id: number, @Req() request: Request): Promise<void> {
+    async marcarAusente(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
 
         await this.service.marcarAusente(id, this.currentUser(request));
     }
@@ -72,3 +74,4 @@ export class ReservasController {
     }
 
 }
+

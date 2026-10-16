@@ -23,10 +23,10 @@ export class Usuario {
     @Column()
     clave: string
 
-    @Column({ type: "enum", enum: EstadoUsuarioEnum })
+    @Column({ type: "enum", enum: EstadoUsuarioEnum, enumName: "estados_usuarios" })
     estado: EstadoUsuarioEnum
 
-    @Column({ type: "enum", enum: RolUsuarioEnum })
+    @Column({ type: "enum", enum: RolUsuarioEnum, enumName: "roles_usuarios" })
     rol: RolUsuarioEnum
 
 }
