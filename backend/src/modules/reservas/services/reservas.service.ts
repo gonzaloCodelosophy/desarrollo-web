@@ -1,9 +1,10 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { Reserva } from "../entities/reserva.entity.js";
 import { EstadoReservaEnum } from "../enums/estado-reserva.enum.js";
 import { CreateReservaDto } from "../dtos/input/create-reserva.dto.js";
+import { CreateReservaResponseDto } from "../dtos/output/create-reserva-response.dto.js";
 import { ListReservasQueryDto } from "../dtos/input/list-reservas-query.dto.js";
 import { ReservaDTO } from "../dtos/output/reserva.dto.js";
 import { MedicosService } from "../../medicos/services/medicos.service.js";
@@ -21,7 +22,7 @@ export class ReservasService {
         @InjectRepository(Reserva) private readonly repository: Repository<Reserva>,
         private readonly medicosService: MedicosService) { }
 
-    async crearReserva(dto: CreateReservaDto, currentUser: JwtPayload): Promise<{ id: number }> {
+    async crearReserva(dto: CreateReservaDto, currentUser: JwtPayload): Promise<CreateReservaResponseDto> {
 
         const idPaciente = this.resolverIdPaciente(dto, currentUser);
         const fechaHora = new Date(dto.fechaHora);
@@ -32,7 +33,11 @@ export class ReservasService {
         const medico = await this.medicosService.buscarPorIdOrFail(dto.idMedico);
 
         const conflicto = await this.repository.exists({
-            where: { idMedico: dto.idMedico, fechaHora },
+            where: {
+                idMedico: dto.idMedico,
+                fechaHora,
+                estado: Not(EstadoReservaEnum.CANCELADO),
+            },
         });
 
         if (conflicto) {
@@ -168,6 +173,7 @@ export class ReservasService {
 
         const limite = new Date(ahora);
         limite.setDate(limite.getDate() + MAX_DIAS_ANTICIPACION);
+        limite.setHours(23, 59, 59, 999);
 
         if (fechaHora > limite) {
             throw new BadRequestException(`Las reservas se pueden realizar con un máximo de ${MAX_DIAS_ANTICIPACION} días de anticipación`);
