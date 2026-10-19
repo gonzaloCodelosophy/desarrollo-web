@@ -1,0 +1,38 @@
+<main>
+  <h1>Iniciar sesión</h1>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="documento">Documento</label>
+      <input
+        id="documento"
+        type="text"
+        formControlName="documento"
+        autocomplete="username"
+      />
+      @if (form.controls.documento.invalid && form.controls.documento.touched) {
+        <span>El documento es obligatorio.</span>
+      }
+    </div>
+
+    <div>
+      <label for="clave">Contraseña</label>
+      <input
+        id="clave"
+        type="password"
+        formControlName="clave"
+        autocomplete="current-password"
+      />
+      @if (form.controls.clave.invalid && form.controls.clave.touched) {
+        <span>La contraseña es obligatoria.</span>
+      }
+    </div>
+
+    @if (mensajeError()) {
+      <p role="alert">{{ mensajeError() }}</p>
+    }
+
+    <button type="submit" [disabled]="cargando()">
+      {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+  </form>
+</main>

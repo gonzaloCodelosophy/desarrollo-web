@@ -1,0 +1,19 @@
+<main>
+  <h1>Página no encontrada</h1>
+  <p>La dirección que ingresaste no existe.</p>
+  @if (authService.isAuthenticated()) {
+    @switch (authService.userRole()) {
+      @case ('PACIENTE') {
+        <a routerLink="/paciente/turnos">Ir a Mis turnos</a>
+      }
+      @case ('MEDICO') {
+        <a routerLink="/medico/agenda">Ir a la Agenda</a>
+      }
+      @case ('ADMINISTRADOR') {
+        <a routerLink="/administracion/turnos">Ir a Turnos</a>
+      }
+    }
+  } @else {
+    <a routerLink="/login">Ir al inicio de sesión</a>
+  }
+</main>
