@@ -1,0 +1,18 @@
+<main>
+  <h1>Sin permisos</h1>
+  <p>No tenés acceso a esta sección, por favor reintenta nuevamente.</p>
+  @switch (authService.userRole()) {
+  @case ('PACIENTE') {
+  <a routerLink="/paciente/turnos">Ir a Mis turnos</a>
+  }
+  @case ('MEDICO') {
+  <a routerLink="/medico/agenda">Ir a la Agenda</a>
+  }
+  @case ('ADMINISTRADOR') {
+  <a routerLink="/administracion/turnos">Ir a Turnos</a>
+  }
+  @default {
+  <a routerLink="/login">Ir al inicio de sesión</a>
+  }
+  }
+</main>

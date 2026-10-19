@@ -1,0 +1,29 @@
+<header>
+  <span>Clínica San Martín</span>
+  <span>
+    {{ currentUser?.nombres }} {{ currentUser?.apellidos }}
+    ({{ userRole }})
+  </span>
+  <button type="button" (click)="logout()">Cerrar sesión</button>
+</header>
+
+<nav>
+  @switch (userRole) {
+    @case ('PACIENTE') {
+      <a routerLink="/paciente/turnos">Mis turnos</a>
+      <a routerLink="/paciente/reservar">Reservar turno</a>
+    }
+    @case ('MEDICO') {
+      <a routerLink="/medico/agenda">Agenda</a>
+    }
+    @case ('ADMINISTRADOR') {
+      <a routerLink="/administracion/turnos">Turnos</a>
+      <a routerLink="/administracion/reservar">Reservar</a>
+      <a routerLink="/administracion/aranceles">Aranceles</a>
+    }
+  }
+</nav>
+
+<main>
+  <router-outlet />
+</main>
