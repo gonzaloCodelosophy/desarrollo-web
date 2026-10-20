@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
+import { ThemeService } from '../core/theme/theme.service';
 import type { UsuarioSesion, RolUsuario } from '../core/models/usuario.model';
 
 @Component({
@@ -9,6 +10,7 @@ import type { UsuarioSesion, RolUsuario } from '../core/models/usuario.model';
   templateUrl: './layout.html',
 })
 export class LayoutComponent {
+  readonly themeService = inject(ThemeService);
   private readonly authService = inject(AuthService);
 
   readonly usuario: UsuarioSesion | null = null;
