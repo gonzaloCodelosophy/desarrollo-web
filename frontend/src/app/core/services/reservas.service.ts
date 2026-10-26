@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import type {
   CreateReservaRequest,
@@ -15,19 +15,30 @@ export class ReservasService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = '/api/v1/reservas';
 
+  listarMisTurnos(): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(this.baseUrl);
+  }
+
   listarReservas(filtros?: FiltroReservas): Observable<Reserva[]> {
     let params = new HttpParams();
+
     if (filtros?.fecha) {
       params = params.set('fecha', filtros.fecha);
     }
-    if (filtros?.idMedico !== undefined && filtros?.idMedico !== '') {
+
+    if (filtros?.idMedico !== undefined && filtros.idMedico !== '') {
       params = params.set('idMedico', String(filtros.idMedico));
     }
+
     return this.http.get<Reserva[]>(this.baseUrl, { params });
   }
 
   crearReserva(body: CreateReservaRequest): Observable<CreateReservaResponse> {
     return this.http.post<CreateReservaResponse>(this.baseUrl, body);
+  }
+
+  cancelarTurno(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${id}/cancelar`, {});
   }
 
   cancelarReserva(id: number): Observable<void> {

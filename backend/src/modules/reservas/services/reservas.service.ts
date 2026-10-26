@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Not, Repository } from "typeorm";
+import { EntityManager, Not, Repository } from "typeorm";
 import { Reserva } from "../entities/reserva.entity.js";
 import { EstadoReservaEnum } from "../enums/estado-reserva.enum.js";
 import { CreateReservaDto } from "../dtos/input/create-reserva.dto.js";
@@ -86,31 +86,33 @@ export class ReservasService {
 
     async cancelarReserva(id: number, currentUser: JwtPayload): Promise<void> {
 
-        const reserva = await this.buscarPorIdOrFail(id);
+        await this.repository.manager.transaction(async (manager) => {
+            const reserva = await this.buscarPorIdConBloqueo(manager, id);
 
-        if (reserva.estado !== EstadoReservaEnum.ACTIVO) {
-            throw new ConflictException('El turno no está activo');
-        }
-
-        const ahora = new Date();
-
-        if (currentUser.rol === RolUsuarioEnum.PACIENTE) {
-            if (reserva.idPaciente !== currentUser.sub) {
-                throw new ForbiddenException('El turno no pertenece al paciente');
+            if (reserva.estado !== EstadoReservaEnum.ACTIVO) {
+                throw new ConflictException('El turno no está activo');
             }
-            if (this.inicioDelDia(ahora) >= this.inicioDelDia(reserva.fechaHora)) {
-                throw new ForbiddenException('Solo se puede cancelar hasta el día anterior a la consulta');
-            }
-        } else if (currentUser.rol === RolUsuarioEnum.ADMINISTRADOR) {
-            if (ahora >= reserva.fechaHora) {
-                throw new ForbiddenException('Solo se puede cancelar hasta el momento en que inicia la consulta');
-            }
-        } else {
-            throw new ForbiddenException('No tiene permisos para cancelar turnos');
-        }
 
-        reserva.estado = EstadoReservaEnum.CANCELADO;
-        await this.repository.save(reserva);
+            const ahora = new Date();
+
+            if (currentUser.rol === RolUsuarioEnum.PACIENTE) {
+                if (reserva.idPaciente !== currentUser.sub) {
+                    throw new ForbiddenException('El turno no pertenece al paciente');
+                }
+                if (this.inicioDelDia(ahora) >= this.inicioDelDia(reserva.fechaHora)) {
+                    throw new ForbiddenException('Solo se puede cancelar hasta el día anterior a la consulta');
+                }
+            } else if (currentUser.rol === RolUsuarioEnum.ADMINISTRADOR) {
+                if (ahora >= reserva.fechaHora) {
+                    throw new ForbiddenException('Solo se puede cancelar hasta el momento en que inicia la consulta');
+                }
+            } else {
+                throw new ForbiddenException('No tiene permisos para cancelar turnos');
+            }
+
+            reserva.estado = EstadoReservaEnum.CANCELADO;
+            await manager.save(reserva);
+        });
     }
 
     async marcarAtendido(id: number, currentUser: JwtPayload): Promise<void> {
@@ -123,18 +125,20 @@ export class ReservasService {
 
     private async cambiarEstadoComoMedico(id: number, currentUser: JwtPayload, estado: EstadoReservaEnum): Promise<void> {
 
-        const reserva = await this.buscarPorIdOrFail(id);
+        await this.repository.manager.transaction(async (manager) => {
+            const reserva = await this.buscarPorIdConBloqueo(manager, id);
 
-        if (reserva.idMedico !== currentUser.idMedico) {
-            throw new ForbiddenException('El turno no pertenece al médico');
-        }
+            if (reserva.idMedico !== currentUser.idMedico) {
+                throw new ForbiddenException('El turno no pertenece al médico');
+            }
 
-        if (reserva.estado !== EstadoReservaEnum.ACTIVO) {
-            throw new ConflictException('El turno no está activo');
-        }
+            if (reserva.estado !== EstadoReservaEnum.ACTIVO) {
+                throw new ConflictException('El turno no está activo');
+            }
 
-        reserva.estado = estado;
-        await this.repository.save(reserva);
+            reserva.estado = estado;
+            await manager.save(reserva);
+        });
     }
 
     private resolverIdPaciente(dto: CreateReservaDto, currentUser: JwtPayload): number {
@@ -219,6 +223,20 @@ export class ReservasService {
         const reserva = await this.repository.findOne({
             where: { id },
             relations: { medico: { usuario: true }, paciente: true },
+        });
+
+        if (!reserva) {
+            throw new NotFoundException('El turno indicado no existe');
+        }
+
+        return reserva;
+    }
+
+    private async buscarPorIdConBloqueo(manager: EntityManager, id: number): Promise<Reserva> {
+
+        const reserva = await manager.findOne(Reserva, {
+            where: { id },
+            lock: { mode: 'pessimistic_write' },
         });
 
         if (!reserva) {

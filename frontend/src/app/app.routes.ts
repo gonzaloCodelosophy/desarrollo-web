@@ -19,7 +19,8 @@ export const routes: Routes = [
         path: 'paciente/turnos',
         canActivate: [roleGuard],
         data: { roles: ['PACIENTE'], title: 'Mis Turnos' },
-        component: PlaceholderComponent,
+        loadComponent: () =>
+          import('./features/paciente/paciente-turnos/paciente-turnos').then((m) => m.PacienteTurnosComponent),
       },
       {
         path: 'paciente/reservar',
