@@ -38,19 +38,28 @@ export const routes: Routes = [
         path: 'administracion/turnos',
         canActivate: [roleGuard],
         data: { roles: ['ADMINISTRADOR'], title: 'Turnos' },
-        component: PlaceholderComponent,
+        loadComponent: () =>
+          import('./features/administracion/turnos/turnos').then(
+            (m) => m.TurnosComponent
+          ),
       },
       {
         path: 'administracion/reservar',
         canActivate: [roleGuard],
-        data: { roles: ['ADMINISTRADOR'], title: 'Reservar Turno (Ariel / Alejandro)' },
-        component: PlaceholderComponent,
+        data: { roles: ['ADMINISTRADOR'], title: 'Reservar' },
+        loadComponent: () =>
+          import('./features/administracion/reservar/reservar').then(
+            (m) => m.ReservarComponent
+          ),
       },
       {
         path: 'administracion/aranceles',
         canActivate: [roleGuard],
         data: { roles: ['ADMINISTRADOR'], title: 'Aranceles' },
-        component: PlaceholderComponent,
+        loadComponent: () =>
+          import('./features/administracion/aranceles/aranceles').then(
+            (m) => m.ArancelesComponent
+          ),
       },
 
       {

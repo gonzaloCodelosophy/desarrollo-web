@@ -1,0 +1,253 @@
+<div class="page-container">
+    <header class="page-header">
+        <div>
+            <p class="card-subtitle">GESTIÓN DE TURNOS</p>
+            <h1 class="page-title">Todos los turnos</h1>
+            <p class="page-subtitle">Consultá, gestioná y cancelá reservas según las reglas de la clínica.</p>
+        </div>
+        <div class="page-actions">
+            <a routerLink="/administracion/reservar" class="btn btn-primary">
+                Reservar turno
+            </a>
+        </div>
+    </header>
+
+    @if (mensajeExito()) {
+    <p class="alert alert-success" role="status">{{ mensajeExito() }}</p>
+    }
+
+    @if (mensajeError()) {
+    <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+    }
+
+    <div class="content-grid">
+        <section class="card" aria-labelledby="titulo-tabla-turnos">
+            <div class="card-header">
+                <h2 id="titulo-tabla-turnos" class="sr-only">Listado de turnos</h2>
+
+                <div class="nav-tabs" role="tablist" aria-label="Filtrar turnos por estado">
+                    <button type="button" role="tab" class="nav-tab"
+                        [class.nav-tab-active]="pestanaActiva() === 'TODOS'"
+                        [attr.aria-selected]="pestanaActiva() === 'TODOS'" (click)="seleccionarPestana('TODOS')">
+                        Todos ({{ resumen().total }})
+                    </button>
+                    <button type="button" role="tab" class="nav-tab"
+                        [class.nav-tab-active]="pestanaActiva() === 'ACTIVO'"
+                        [attr.aria-selected]="pestanaActiva() === 'ACTIVO'" (click)="seleccionarPestana('ACTIVO')">
+                        Próximos / Activos ({{ resumen().activos }})
+                    </button>
+                    <button type="button" role="tab" class="nav-tab"
+                        [class.nav-tab-active]="pestanaActiva() === 'ATENDIDO'"
+                        [attr.aria-selected]="pestanaActiva() === 'ATENDIDO'" (click)="seleccionarPestana('ATENDIDO')">
+                        Atendidos ({{ resumen().atendidos }})
+                    </button>
+                    <button type="button" role="tab" class="nav-tab"
+                        [class.nav-tab-active]="pestanaActiva() === 'CANCELADO'"
+                        [attr.aria-selected]="pestanaActiva() === 'CANCELADO'"
+                        (click)="seleccionarPestana('CANCELADO')">
+                        Cancelados ({{ resumen().cancelados }})
+                    </button>
+                    <button type="button" role="tab" class="nav-tab"
+                        [class.nav-tab-active]="pestanaActiva() === 'AUSENTE'"
+                        [attr.aria-selected]="pestanaActiva() === 'AUSENTE'" (click)="seleccionarPestana('AUSENTE')">
+                        Ausentes ({{ resumen().ausentes }})
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filtro-fecha" class="form-label">Fecha</label>
+                        <input id="filtro-fecha" type="date" class="form-control" [value]="filtroFecha()"
+                            (change)="onFechaChange($event)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtro-medico" class="form-label">Médico</label>
+                        <select id="filtro-medico" class="form-select" [value]="filtroIdMedico()"
+                            (change)="onMedicoChange($event)">
+                            <option value="">Todos los médicos</option>
+                            @for (medico of medicos(); track medico.id) {
+                            <option [value]="medico.id">
+                                Dr/a. {{ medico.nombres }} {{ medico.apellidos }} (MP {{ medico.matricula }})
+                            </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtro-estado" class="form-label">Estado</label>
+                        <select id="filtro-estado" class="form-select" [value]="pestanaActiva()"
+                            (change)="onEstadoSelectChange($event)">
+                            <option value="TODOS">Todos los estados</option>
+                            <option value="ACTIVO">Activo (Pendiente)</option>
+                            <option value="ATENDIDO">Atendido</option>
+                            <option value="AUSENTE">Ausente</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="buscar-turno" class="form-label">Buscar</label>
+                        <input id="buscar-turno" type="search" class="form-control"
+                            placeholder="Paciente, médico o # turno..." [value]="busqueda()"
+                            (input)="onBusquedaChange($event)" />
+                    </div>
+                </div>
+
+                <div class="page-actions">
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="limpiarFiltros()">
+                        Limpiar filtros
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" [disabled]="cargando()"
+                        (click)="cargarReservas()">
+                        Actualizar listado
+                    </button>
+                </div>
+
+                @if (cargando()) {
+                <p class="loading-state" role="status">Cargando turnos…</p>
+                } @else if (reservasFiltradas().length === 0) {
+                <p class="empty-state">No se encontraron turnos con los filtros seleccionados.</p>
+                } @else {
+                <div class="table-container" tabindex="0" role="region" aria-label="Turnos reservados">
+                    <table class="table">
+                        <caption class="sr-only">Listado administrativo de turnos médicos</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Fecha y Horario</th>
+                                <th scope="col">Paciente</th>
+                                <th scope="col">Médico</th>
+                                <th scope="col">Arancel</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (reserva of reservasFiltradas(); track reserva.id) {
+                            <tr>
+                                <td>#{{ reserva.id }}</td>
+                                <td>
+                                    <strong>{{ reserva.fechaHora | date:'dd/MM/yyyy' }}</strong>
+                                    <div>{{ reserva.fechaHora | date:'HH:mm' }} hs</div>
+                                </td>
+                                <td>
+                                    <span class="user-avatar" aria-hidden="true">
+                                        {{ obtenerIniciales(reserva.paciente.nombres, reserva.paciente.apellidos) }}
+                                    </span>
+                                    <div>
+                                        <strong>{{ reserva.paciente.nombres }} {{ reserva.paciente.apellidos }}</strong>
+                                        @if (reserva.paciente.documento) {
+                                        <div class="card-subtitle">DNI {{ reserva.paciente.documento }}</div>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    Dr/a. {{ reserva.medico.nombres }} {{ reserva.medico.apellidos }}
+                                </td>
+                                <td>
+                                    $ {{ reserva.valorConsulta | number:'1.0-0' }}
+                                </td>
+                                <td>
+                                    <span [class]="obtenerClaseBadge(reserva.estado)">
+                                        {{ obtenerTextoEstado(reserva.estado) }}
+                                    </span>
+                                </td>
+                                <td class="table-actions">
+                                    @if (puedeCancelar(reserva)) {
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        [disabled]="cancelandoId() === reserva.id"
+                                        (click)="solicitarCancelacion(reserva)">
+                                        {{ cancelandoId() === reserva.id ? 'Cancelando...' : 'Cancelar turno' }}
+                                    </button>
+                                    } @else {
+                                    <button type="button" class="btn btn-outline btn-sm" disabled
+                                        [title]="motivoNoCancelable(reserva)">
+                                        No cancelable
+                                    </button>
+                                    <small class="form-help">{{ motivoNoCancelable(reserva) }}</small>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+        </section>
+
+        <aside aria-label="Resumen y reglas de cancelación">
+            <section class="card" aria-labelledby="titulo-resumen-dia">
+                <div class="card-header">
+                    <h2 id="titulo-resumen-dia" class="card-title">Resumen de la vista</h2>
+                </div>
+                <div class="card-body">
+                    <div class="stat-card">
+                        <span>Total de turnos</span>
+                        <strong>{{ resumen().total }}</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Pendientes (Activos)</span>
+                        <strong>{{ resumen().activos }}</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Atendidos</span>
+                        <strong>{{ resumen().atendidos }}</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Ausentes</span>
+                        <strong>{{ resumen().ausentes }}</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Cancelados</span>
+                        <strong>{{ resumen().cancelados }}</strong>
+                    </div>
+                </div>
+            </section>
+
+            <div class="alert alert-info" role="note">
+                <strong>Reglas de cancelación (Administración):</strong>
+                Las reservas activas pueden cancelarse desde administración hasta el momento exacto en que inicia la
+                consulta. El arancel reflejado en cada fila corresponde al valor congelado al momento de reservar.
+            </div>
+        </aside>
+    </div>
+
+    @if (reservaACancelar(); as seleccionada) {
+    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-cancelar">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="titulo-modal-cancelar" class="card-title">Confirmar cancelación de turno</h2>
+            </div>
+            <div class="modal-body">
+                <p>
+                    ¿Estás seguro de que querés cancelar el turno <strong>#{{ seleccionada.id }}</strong>?
+                </p>
+                <ul>
+                    <li><strong>Paciente:</strong> {{ seleccionada.paciente.nombres }} {{
+                        seleccionada.paciente.apellidos }}</li>
+                    <li><strong>Médico:</strong> Dr/a. {{ seleccionada.medico.nombres }} {{
+                        seleccionada.medico.apellidos }}</li>
+                    <li><strong>Fecha y hora:</strong> {{ seleccionada.fechaHora | date:'dd/MM/yyyy HH:mm' }} hs</li>
+                </ul>
+                <p class="form-help">
+                    Al cancelar la reserva, este horario volverá a quedar disponible para nuevas reservas.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" [disabled]="cancelandoId() !== null"
+                    (click)="cerrarModalCancelacion()">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-danger" [disabled]="cancelandoId() !== null"
+                    (click)="confirmarCancelacion()">
+                    {{ cancelandoId() !== null ? 'Cancelando...' : 'Sí, cancelar turno' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

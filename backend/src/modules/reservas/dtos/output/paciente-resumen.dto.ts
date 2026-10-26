@@ -11,4 +11,7 @@ export class PacienteResumenDTO {
     @ApiProperty()
     apellidos!: string;
 
+    @ApiProperty()
+    documento!: string;
+
 }
