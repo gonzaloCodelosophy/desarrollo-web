@@ -1,0 +1,220 @@
+<div class="page-container">
+    <header class="page-header">
+        <div>
+            <p class="card-subtitle">ADMINISTRACIÓN DE TURNOS</p>
+            <h1 class="page-title">Reservar turno para paciente</h1>
+            <p class="page-subtitle">
+                Seleccioná un paciente activo, el profesional médico, la fecha y un horario disponible.
+            </p>
+        </div>
+        <div class="page-actions">
+            <a routerLink="/administracion/turnos" class="btn btn-outline">
+                Ver todos los turnos
+            </a>
+        </div>
+    </header>
+
+    @if (mensajeExito()) {
+    <div class="alert alert-success" role="status">
+        <p>{{ mensajeExito() }}</p>
+        <button type="button" class="btn btn-sm btn-outline" (click)="irAListadoTurnos()">
+            Ir al listado de turnos
+        </button>
+    </div>
+    }
+
+    @if (mensajeError()) {
+    <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+    }
+
+    <div class="content-grid">
+        <section class="card" aria-labelledby="titulo-form-reserva">
+            <div class="card-header">
+                <h2 id="titulo-form-reserva" class="card-title">Datos de la reserva</h2>
+            </div>
+
+            <div class="card-body">
+                @if (cargandoDatos()) {
+                <p class="loading-state" role="status">Cargando pacientes y médicos…</p>
+                } @else {
+                <form class="form" [formGroup]="form" (ngSubmit)="confirmarReserva()">
+                    <div class="form-group">
+                        <label for="buscar-paciente" class="form-label">
+                            1. Buscar paciente (por nombre, apellido o DNI)
+                        </label>
+                        <input id="buscar-paciente" type="search" class="form-control"
+                            placeholder="Ej: 30000001, Rodríguez, Sofía..." [value]="busquedaPaciente()"
+                            (input)="onBusquedaPaciente($event)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="select-paciente" class="form-label form-required">
+                            Paciente destinatario
+                        </label>
+                        <select id="select-paciente" class="form-select" formControlName="idPaciente"
+                            (change)="onPacienteSelectChange($event)">
+                            <option [value]="0" disabled>Seleccioná un paciente...</option>
+                            @for (paciente of pacientesFiltrados(); track paciente.id) {
+                            <option [value]="paciente.id">
+                                {{ paciente.apellidos }}, {{ paciente.nombres }} — DNI {{ paciente.documento }}
+                            </option>
+                            }
+                        </select>
+                        @if (pacientesFiltrados().length === 0) {
+                        <span class="form-help">No hay pacientes que coincidan con el filtro de búsqueda.</span>
+                        }
+                        @if (form.controls.idPaciente.invalid && form.controls.idPaciente.touched) {
+                        <span class="form-error" role="alert">Debés seleccionar un paciente válido.</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="select-medico" class="form-label form-required">
+                            2. Profesional médico (Clínica médica)
+                        </label>
+                        <select id="select-medico" class="form-select" formControlName="idMedico"
+                            (change)="onMedicoChange($event)">
+                            <option [value]="0" disabled>Seleccioná un médico...</option>
+                            @for (medico of medicos(); track medico.id) {
+                            <option [value]="medico.id">
+                                Dr/a. {{ medico.nombres }} {{ medico.apellidos }} (MP {{ medico.matricula }}) — $ {{
+                                medico.valorConsulta | number:'1.0-0' }}
+                            </option>
+                            }
+                        </select>
+                        @if (form.controls.idMedico.invalid && form.controls.idMedico.touched) {
+                        <span class="form-error" role="alert">Debés seleccionar un médico.</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha-turno" class="form-label form-required">
+                            3. Fecha del turno (máximo 30 días de anticipación)
+                        </label>
+                        <input id="fecha-turno" type="date" class="form-control" formControlName="fecha"
+                            [min]="fechaMinima" [max]="fechaMaxima" (change)="onFechaChange($event)" />
+                        <span class="form-help">
+                            Rango permitido: desde {{ fechaMinima | date:'dd/MM/yyyy' }} hasta {{ fechaMaxima |
+                            date:'dd/MM/yyyy' }}.
+                        </span>
+                        @if (!esFechaEnRangoValido(fechaSeleccionada())) {
+                        <span class="form-error" role="alert">
+                            La fecha elegida está fuera del rango permitido de 30 días.
+                        </span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <span class="form-label form-required">
+                            4. Horario de inicio (atención de 08:00 a 16:00 hs, turnos de 1 hora)
+                        </span>
+
+                        @if (!idMedicoSeleccionado()) {
+                        <p class="empty-state">Seleccioná primero un médico para ver sus horarios disponibles.</p>
+                        } @else if (cargandoHorarios()) {
+                        <p class="loading-state" role="status">Verificando disponibilidad horaria…</p>
+                        } @else {
+                        <div class="time-slots" role="group" aria-label="Horarios disponibles en punto">
+                            @for (hora of horariosBase; track hora) {
+                            @let deshabilitado = estaHorarioDeshabilitado(hora);
+                            @let seleccionado = horaSeleccionada() === hora;
+                            <button type="button" class="time-slot" [class.time-slot-selected]="seleccionado"
+                                [class.time-slot-unavailable]="deshabilitado" [disabled]="deshabilitado"
+                                [attr.aria-pressed]="seleccionado" (click)="seleccionarHora(hora)">
+                                <strong>{{ hora }} hs</strong>
+                                <small>{{ motivoHorarioNoDisponible(hora) }}</small>
+                            </button>
+                            }
+                        </div>
+                        }
+
+                        @if (form.controls.hora.invalid && form.controls.hora.touched) {
+                        <span class="form-error" role="alert">Seleccioná un horario disponible.</span>
+                        }
+                    </div>
+
+                    <div class="card-footer">
+                        <a routerLink="/administracion/turnos" class="btn btn-outline">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary"
+                            [disabled]="enviando() || form.invalid || !esFechaEnRangoValido(fechaSeleccionada())">
+                            {{ enviando() ? 'Confirmando reserva...' : 'Confirmar reserva' }}
+                        </button>
+                    </div>
+                </form>
+                }
+            </div>
+        </section>
+
+        <aside aria-label="Resumen de la reserva a crear">
+            <section class="card" aria-labelledby="titulo-resumen-reserva">
+                <div class="card-header">
+                    <h2 id="titulo-resumen-reserva" class="card-title">Resumen de la reserva</h2>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <span class="form-label">Paciente</span>
+                        @if (pacienteActual(); as pac) {
+                        <p>
+                            <strong>{{ pac.nombres }} {{ pac.apellidos }}</strong>
+                            <br />
+                            <small class="card-subtitle">DNI {{ pac.documento }}</small>
+                        </p>
+                        } @else {
+                        <p class="card-subtitle">Sin seleccionar</p>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <span class="form-label">Profesional médico</span>
+                        @if (medicoActual(); as med) {
+                        <p>
+                            <strong>Dr/a. {{ med.nombres }} {{ med.apellidos }}</strong>
+                            <br />
+                            <small class="card-subtitle">MP {{ med.matricula }} · Clínica médica</small>
+                        </p>
+                        } @else {
+                        <p class="card-subtitle">Sin seleccionar</p>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <span class="form-label">Fecha y horario</span>
+                        @if (fechaSeleccionada() && horaSeleccionada()) {
+                        <p>
+                            <strong>{{ fechaSeleccionada() | date:'dd/MM/yyyy' }} a las {{ horaSeleccionada() }}
+                                hs</strong>
+                            <br />
+                            <small class="card-subtitle">Duración: 1 hora</small>
+                        </p>
+                        } @else {
+                        <p class="card-subtitle">Pendiente de selección</p>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <span class="form-label">Arancel de consulta (se congela al reservar)</span>
+                        @if (medicoActual(); as med) {
+                        <p class="stat-card">
+                            <strong>$ {{ med.valorConsulta | number:'1.0-0' }}</strong>
+                        </p>
+                        } @else {
+                        <p class="stat-card">—</p>
+                        }
+                    </div>
+                </div>
+            </section>
+
+            <div class="alert alert-info" role="note">
+                <strong>Reglas de reserva:</strong>
+                <ul>
+                    <li>El horario de atención es de 08:00 a 16:00 hs (turnos de 1 hora).</li>
+                    <li>Las reservas pueden realizarse con hasta 30 días de anticipación.</li>
+                    <li>El valor de la consulta queda congelado con el precio vigente al confirmar.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
