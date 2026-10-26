@@ -1,0 +1,133 @@
+<main class="page-container appointments-page">
+  <div class="appointments-grid">
+    <section class="appointments-main" aria-labelledby="titulo-mis-turnos">
+      <header class="page-header appointments-heading">
+        <div>
+          <p class="eyebrow">MI ESPACIO DE SALUD</p>
+          <h1 id="titulo-mis-turnos" class="page-title">Mis turnos</h1>
+          <p class="page-subtitle">Consultá tus turnos reservados y gestioná tus consultas.</p>
+        </div>
+      </header>
+
+      @if (mensajeExito()) {
+        <p class="alert alert-success" role="status">{{ mensajeExito() }}</p>
+      }
+
+      @if (errorCarga()) {
+        <div class="alert alert-error" role="alert">
+          <span>{{ errorCarga() }}</span>
+          <button type="button" class="btn btn-outline btn-sm" (click)="cargarTurnos()">Reintentar</button>
+        </div>
+      }
+
+      <div class="nav-tabs appointment-tabs" role="tablist" aria-label="Filtrar mis turnos">
+        <button type="button" role="tab" [attr.aria-selected]="filtro() === 'proximos'"
+          [class.nav-tab-active]="filtro() === 'proximos'" (click)="seleccionarFiltro('proximos')">
+          Próximos <span class="tab-count">{{ cantidades().proximos }}</span>
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="filtro() === 'pasados'"
+          [class.nav-tab-active]="filtro() === 'pasados'" (click)="seleccionarFiltro('pasados')">
+          Pasados <span class="tab-count">{{ cantidades().pasados }}</span>
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="filtro() === 'cancelados'"
+          [class.nav-tab-active]="filtro() === 'cancelados'" (click)="seleccionarFiltro('cancelados')">
+          Cancelados <span class="tab-count">{{ cantidades().cancelados }}</span>
+        </button>
+      </div>
+
+      @if (cargando()) {
+        <p class="loading-state" role="status">Cargando tus turnos…</p>
+      } @else if (!errorCarga() && turnosFiltrados().length === 0) {
+        <section class="empty-state appointment-empty">
+          <span class="empty-icon" aria-hidden="true">＋</span>
+          <h2>{{ filtro() === 'proximos' ? 'Todavía no tenés turnos próximos' : filtro() === 'pasados' ? 'No hay turnos pasados' : 'No hay turnos cancelados' }}</h2>
+          <p>{{ filtro() === 'proximos' ? 'Cuando reserves una consulta, la vas a encontrar acá.' : 'En esta sección aparecerán tus consultas cuando corresponda.' }}</p>
+          @if (filtro() === 'proximos') {
+            <a routerLink="/paciente/reservar" class="btn btn-primary">Reservar un turno</a>
+          }
+        </section>
+      } @else if (!cargando() && !errorCarga()) {
+        <section class="appointment-list" [attr.aria-label]="filtro() === 'proximos' ? 'Próximos turnos' : filtro() === 'pasados' ? 'Turnos pasados' : 'Turnos cancelados'">
+          @for (turno of turnosFiltrados(); track turno.id) {
+            <article class="card appointment-card">
+              <div class="appointment-date" aria-label="Fecha del turno">
+                <span class="appointment-weekday">{{ diaSemana(turno.fechaHora) }}</span>
+                <strong>{{ diaMes(turno.fechaHora) }}</strong>
+                <span class="appointment-month">{{ mes(turno.fechaHora) }}</span>
+              </div>
+              <div class="appointment-details">
+                <h2>{{ nombreMedico(turno) }}</h2>
+                <p class="doctor-specialty">Médico clínico</p>
+                <div class="appointment-meta">
+                  <span aria-label="Horario">◷ {{ hora(turno.fechaHora) }}–{{ horaFin(turno.fechaHora) }}</span>
+                </div>
+              </div>
+              <div class="appointment-actions">
+                <span class="badge" [class]="'badge ' + claseEstado(turno.estado)">{{ etiquetaEstado(turno.estado) }}</span>
+                <div class="appointment-price">
+                  <span>Valor de la consulta</span>
+                  <strong>$ {{ precio(turno.valorConsulta) }}</strong>
+                </div>
+                @if (puedeCancelar(turno)) {
+                  <button type="button" class="btn btn-danger btn-sm" (click)="solicitarCancelacion(turno)">
+                    Cancelar turno
+                  </button>
+                } @else if (turno.estado === 'ACTIVO' && filtro() === 'proximos') {
+                  <p class="cancel-note">La cancelación está habilitada hasta el día anterior.</p>
+                }
+              </div>
+            </article>
+          }
+        </section>
+      }
+    </section>
+
+    <aside class="appointments-aside" aria-label="Información sobre tus turnos">
+      <section class="card info-card">
+        <div class="info-icon" aria-hidden="true">▦</div>
+        <h2>Información importante</h2>
+        <ul>
+          <li>Podés cancelar un turno hasta el <strong>día anterior</strong> a la consulta.</li>
+          <li>Los turnos tienen una duración de <strong>1 hora</strong>.</li>
+          <li>El valor de la consulta queda congelado al momento de reservar.</li>
+        </ul>
+      </section>
+      <section class="card booking-card">
+        <span class="booking-flower" aria-hidden="true">✿</span>
+        <h2>¿Necesitás un turno?</h2>
+        <p>Podés reservar una nueva consulta en pocos pasos.</p>
+        <a routerLink="/paciente/reservar" class="btn btn-primary">Reservar turno <span aria-hidden="true">→</span></a>
+      </section>
+    </aside>
+  </div>
+</main>
+
+@if (turnoAConfirmar(); as turno) {
+  <div class="modal-overlay" (click)="cerrarConfirmacion()">
+    <section class="modal cancel-dialog" role="alertdialog" aria-modal="true"
+      aria-labelledby="confirmar-cancelacion-titulo" aria-describedby="confirmar-cancelacion-descripcion"
+      (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 id="confirmar-cancelacion-titulo">¿Cancelar este turno?</h2>
+        <button type="button" class="btn btn-ghost btn-icon" aria-label="Cerrar" [disabled]="cancelando()"
+          (click)="cerrarConfirmacion()">×</button>
+      </header>
+      <div class="modal-body">
+        <p id="confirmar-cancelacion-descripcion">
+          Vas a cancelar tu consulta con <strong>{{ nombreMedico(turno) }}</strong> el
+          <strong>{{ diaSemana(turno.fechaHora) }} {{ diaMes(turno.fechaHora) }} {{ mes(turno.fechaHora) }}</strong>
+          a las <strong>{{ hora(turno.fechaHora) }}</strong>.
+        </p>
+        <p>Esta acción libera el horario para que pueda reservarse nuevamente.</p>
+        @if (errorCancelacion()) {
+          <p class="alert alert-error" role="alert">{{ errorCancelacion() }}</p>
+        }
+      </div>
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-outline" [disabled]="cancelando()" (click)="cerrarConfirmacion()">Volver</button>
+        <button type="button" class="btn btn-danger" [disabled]="cancelando()" [attr.aria-busy]="cancelando()"
+          (click)="confirmarCancelacion()">{{ cancelando() ? 'Cancelando…' : 'Confirmar cancelación' }}</button>
+      </footer>
+    </section>
+  </div>
+}

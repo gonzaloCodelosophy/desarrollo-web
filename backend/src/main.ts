@@ -4,6 +4,9 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import helmet from 'helmet'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+// Las reglas de turnos usan el horario local acordado para la aplicación.
+process.env.TZ ??= 'America/Argentina/Buenos_Aires';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
