@@ -1,0 +1,133 @@
+<div class="page-container">
+    <header class="page-header">
+        <div>
+            <p class="card-subtitle">MÉDICOS Y PRECIOS</p>
+            <h1 class="page-title">Gestión de precios</h1>
+            <p class="page-subtitle">Consultá y modificá el valor de las consultas de cada médico.</p>
+        </div>
+    </header>
+
+    @if (mensajeExito()) {
+    <p class="alert alert-success" role="status">{{ mensajeExito() }}</p>
+    }
+
+    @if (mensajeError()) {
+    <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+    }
+
+    <div class="content-grid">
+        <section class="card" aria-labelledby="titulo-listado-medicos">
+            <div class="card-header">
+                <h2 id="titulo-listado-medicos" class="card-title">Listado de médicos</h2>
+                <div class="form-group">
+                    <label for="buscar-medico" class="sr-only">Buscar médico por nombre o matrícula</label>
+                    <input id="buscar-medico" type="search" class="form-control"
+                        placeholder="Buscar por nombre o matrícula..." [value]="busqueda()"
+                        (input)="onBusquedaChange($event)" />
+                </div>
+            </div>
+
+            <div class="card-body">
+                @if (cargando()) {
+                <p class="loading-state" role="status">Cargando médicos…</p>
+                } @else if (medicosFiltrados().length === 0) {
+                <p class="empty-state">No se encontraron médicos que coincidan con la búsqueda.</p>
+                } @else {
+                <div class="table-container" tabindex="0" role="region" aria-label="Listado de médicos y aranceles">
+                    <table class="table">
+                        <caption class="sr-only">Médicos activos de la clínica y su valor de consulta</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Especialidad</th>
+                                <th scope="col">Matrícula</th>
+                                <th scope="col">Precio de consulta</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (medico of medicosFiltrados(); track medico.id) {
+                            <tr>
+                                <td>
+                                    <strong>Dr/a. {{ medico.nombres }} {{ medico.apellidos }}</strong>
+                                </td>
+                                <td>Clínica médica</td>
+                                <td>MP {{ medico.matricula }}</td>
+                                <td>
+                                    <strong>$ {{ medico.valorConsulta | number:'1.0-0' }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge badge-active">Activo</span>
+                                </td>
+                                <td class="table-actions">
+                                    <button type="button" class="btn btn-sm"
+                                        [class.btn-primary]="medicoSeleccionado()?.id === medico.id"
+                                        [class.btn-outline]="medicoSeleccionado()?.id !== medico.id"
+                                        (click)="seleccionarMedico(medico)">
+                                        Editar precio
+                                    </button>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+        </section>
+
+        <aside class="card" aria-labelledby="titulo-editar-precio">
+            <div class="card-header">
+                <h2 id="titulo-editar-precio" class="card-title">Editar precio de consulta</h2>
+            </div>
+
+            <div class="card-body">
+                @if (medicoSeleccionado(); as seleccionado) {
+                <div class="form-group">
+                    <span class="user-avatar" aria-hidden="true">{{ obtenerIniciales(seleccionado) }}</span>
+                    <h3>Dr/a. {{ seleccionado.nombres }} {{ seleccionado.apellidos }}</h3>
+                    <p class="card-subtitle">MP {{ seleccionado.matricula }} · Clínica médica</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Precio actual</label>
+                    <p class="stat-card">$ {{ seleccionado.valorConsulta | number:'1.0-0' }}</p>
+                </div>
+
+                <form class="form" [formGroup]="form" (ngSubmit)="guardarCambios()">
+                    <div class="form-group">
+                        <label for="nuevo-precio" class="form-label form-required">Nuevo precio ($)</label>
+                        <input id="nuevo-precio" type="number" min="1" step="1" class="form-control"
+                            formControlName="valorConsulta" />
+                        <span class="form-help">Ingresá el nuevo valor de la consulta (entero mayor a 0).</span>
+
+                        @if (form.controls.valorConsulta.invalid && form.controls.valorConsulta.touched) {
+                        <span class="form-error" role="alert">
+                            Ingresá un valor entero válido mayor a 0 (sin decimales ni signos negativos).
+                        </span>
+                        }
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-outline" [disabled]="guardando()"
+                            (click)="cancelarEdicion()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" [disabled]="guardando() || form.invalid">
+                            {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+                        </button>
+                    </div>
+                </form>
+                } @else {
+                <p class="empty-state">Seleccioná un médico de la tabla para modificar su arancel.</p>
+                }
+
+                <div class="alert alert-info" role="note">
+                    <strong>Importante:</strong> El valor de la consulta se mostrará al paciente al momento de reservar
+                    un turno. Los turnos ya reservados conservan su valor original.
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>

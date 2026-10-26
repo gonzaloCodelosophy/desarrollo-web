@@ -244,6 +244,7 @@ export class ReservasService {
             id: reserva.paciente.id,
             nombres: reserva.paciente.nombres,
             apellidos: reserva.paciente.apellidos,
+            documento: reserva.paciente.documento,
         };
         return dto;
     }
