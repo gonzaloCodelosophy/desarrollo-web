@@ -1,47 +1,83 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../../core/auth/auth.service';
 import type { LoginRequest } from '../../../core/models/auth.model';
+import { ThemeService } from '../../../core/theme/theme.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, PasswordModule, MessageModule],
   templateUrl: './login.html',
+  styleUrl: './login.css',
+  encapsulation: ViewEncapsulation.None,
+  host: { class: 'login-host' },
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  readonly themeService = inject(ThemeService);
 
   readonly form = this.fb.nonNullable.group({
-    documento: ['', Validators.required],
-    clave: ['', Validators.required],
+    documento: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^[0-9]+$/),
+        Validators.minLength(7),
+        Validators.maxLength(9),
+      ],
+    ],
+    clave: ['', [Validators.required, Validators.minLength(4)]],
   });
 
   readonly cargando = signal(false);
   readonly mensajeError = signal<string | null>(null);
 
+  constructor() {
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      if (this.mensajeError()) {
+        this.mensajeError.set(null);
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      this.redirigirDestino();
+    }
+  }
+
   onSubmit(): void {
-    if (this.form.invalid || this.cargando()) return;
+    if (this.cargando()) return;
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.mensajeError.set(null);
     this.cargando.set(true);
 
-    const credentials: LoginRequest = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const credentials: LoginRequest = {
+      documento: raw.documento.trim(),
+      clave: raw.clave,
+    };
 
     this.authService.login(credentials).subscribe({
-      next: (response) => {
+      next: () => {
         this.cargando.set(false);
-        const rol = response.usuario.rol;
-        if (rol === 'PACIENTE') {
-          this.router.navigate(['/paciente/turnos']);
-        } else if (rol === 'MEDICO') {
-          this.router.navigate(['/medico/agenda']);
-        } else if (rol === 'ADMINISTRADOR') {
-          this.router.navigate(['/administracion/turnos']);
-        }
+        this.redirigirDestino();
       },
       error: (err: HttpErrorResponse) => {
         this.cargando.set(false);
@@ -54,5 +90,22 @@ export class LoginComponent {
         }
       },
     });
+  }
+
+  private redirigirDestino(): void {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl && returnUrl.startsWith('/') && returnUrl !== '/login') {
+      this.router.navigateByUrl(returnUrl);
+      return;
+    }
+
+    const rol = this.authService.userRole();
+    if (rol === 'PACIENTE') {
+      this.router.navigate(['/paciente/turnos']);
+    } else if (rol === 'MEDICO') {
+      this.router.navigate(['/medico/agenda']);
+    } else if (rol === 'ADMINISTRADOR') {
+      this.router.navigate(['/administracion/turnos']);
+    }
   }
 }
