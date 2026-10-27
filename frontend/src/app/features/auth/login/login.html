@@ -1,38 +1,131 @@
-<main>
-  <h1>Iniciar sesión</h1>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="documento">Documento</label>
-      <input
-        id="documento"
-        type="text"
-        formControlName="documento"
-        autocomplete="username"
-      />
-      @if (form.controls.documento.invalid && form.controls.documento.touched) {
-        <span>El documento es obligatorio.</span>
-      }
+<main class="login-page" [attr.data-login-theme]="themeService.theme()">
+  <section class="login-left" aria-label="Clínica San Martín">
+    <div class="login-photo-overlay" aria-hidden="true"></div>
+    <div class="login-brand">
+      <div class="login-logos">
+        <img class="login-logo login-logo-light" src="/assets/logo/logo-colores.png"
+          alt="Clínica San Martín — Salud cerca tuyo" decoding="async" />
+        <img class="login-logo login-logo-dark" src="/assets/logo/logo-colores-dark.png" alt="" aria-hidden="true"
+          decoding="async" />
+      </div>
     </div>
+  </section>
 
-    <div>
-      <label for="clave">Contraseña</label>
-      <input
-        id="clave"
-        type="password"
-        formControlName="clave"
-        autocomplete="current-password"
-      />
-      @if (form.controls.clave.invalid && form.controls.clave.touched) {
-        <span>La contraseña es obligatoria.</span>
-      }
-    </div>
-
-    @if (mensajeError()) {
-      <p role="alert">{{ mensajeError() }}</p>
-    }
-
-    <button type="submit" [disabled]="cargando()">
-      {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
+  <section class="login-right" aria-labelledby="login-title">
+    <!-- SVG fondo transparente para alternar mejor entre alternacion de temas -->
+    <svg class="login-art" viewBox="0 0 1122 1402" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="login-petal-pink"
+        d="M 0 1007 L 0 1401 L 266 1401 L 268 1330 L 258 1264 L 230 1180 L 196 1121 L 161 1080 L 138 1060 L 108 1040 L 52 1016 Z" />
+      <path class="login-petal-pink"
+        d="M 975 0 L 973 23 L 977 55 L 985 81 L 1001 113 L 1029 149 L 1087 200 L 1121 241 L 1121 0 Z" />
+      <path class="login-petal-blue"
+        d="M 1121 1401 L 1121 1139 L 1083 1146 L 1048 1161 L 1023 1179 L 1003 1201 L 983 1237 L 974 1269 L 971 1294 L 973 1359 L 948 1306 L 920 1269 L 888 1243 L 848 1225 L 802 1217 L 730 1220 L 661 1238 L 607 1262 L 636 1302 L 672 1344 L 711 1379 L 744 1401 Z" />
+      <path class="login-petal-blue"
+        d="M 1121 783 L 1074 818 L 1036 856 L 995 913 L 972 959 L 954 1012 L 945 1058 L 942 1097 L 943 1203 L 958 1177 L 980 1150 L 1009 1122 L 1081 1065 L 1102 1042 L 1121 1012 Z" />
+    </svg>
+    <button pButton type="button" class="login-theme-button"
+      [attr.aria-label]="themeService.theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+      [attr.aria-pressed]="themeService.theme() === 'dark'"
+      [attr.title]="themeService.theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+      (click)="themeService.toggleTheme()">
+      <svg class="login-theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        @if (themeService.theme() === 'dark') {
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+        } @else {
+        <path d="M20.9 13.3A9 9 0 0 1 10.7 3.1 9.1 9.1 0 1 0 20.9 13.3Z" />
+        }
+      </svg>
     </button>
-  </form>
+
+    <div class="login-card">
+      <header class="login-header">
+        <p class="login-welcome">Bienvenido/a</p>
+        <h1 id="login-title">Iniciá sesión</h1>
+        <p class="login-subtitle">Accedé a tu cuenta para gestionar tus turnos.</p>
+      </header>
+
+      <form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()" [attr.aria-busy]="cargando()">
+        <div class="login-field-group">
+          <label for="documento">Documento</label>
+          <div class="login-input-box">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2.5" y="4" width="19" height="16" rx="2" />
+              <circle cx="8" cy="10" r="2" />
+              <path d="M5 16c.7-2.3 5.3-2.3 6 0M14 9h4m-4 4h4m-4 4h2" />
+            </svg>
+            <input pInputText id="documento" type="text" inputmode="numeric" formControlName="documento"
+              autocomplete="username" placeholder="Ingresá tu documento"
+              [invalid]="form.controls.documento.invalid && form.controls.documento.touched"
+              [attr.aria-invalid]="form.controls.documento.invalid && form.controls.documento.touched"
+              [attr.aria-describedby]="form.controls.documento.invalid && form.controls.documento.touched ? 'documento-error' : null" />
+          </div>
+          @if (form.controls.documento.invalid && form.controls.documento.touched) {
+          <p-message id="documento-error" class="login-field-error" severity="error" size="small" variant="simple">
+            @if (form.controls.documento.errors?.['required']) {
+            El documento es obligatorio.
+            } @else if (form.controls.documento.errors?.['pattern']) {
+            El documento debe contener sólo números (sin puntos ni espacios).
+            } @else if (form.controls.documento.errors?.['minlength'] || form.controls.documento.errors?.['maxlength'])
+            {
+            El documento debe tener entre 7 y 9 dígitos.
+            }
+          </p-message>
+          }
+        </div>
+
+        <div class="login-field-group">
+          <label for="clave">Contraseña</label>
+          <div class="login-input-box">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="5" y="10" width="14" height="11" rx="2" />
+              <path d="M8 10V7a4 4 0 1 1 8 0v3" />
+              <circle cx="12" cy="15" r="1" />
+              <path d="M12 16v2" />
+            </svg>
+            <p-password inputId="clave" formControlName="clave" autocomplete="current-password"
+              placeholder="Ingresá tu contraseña" [feedback]="false" [toggleMask]="true" [fluid]="true"
+              [invalid]="form.controls.clave.invalid && form.controls.clave.touched"
+              [attr.aria-describedby]="form.controls.clave.invalid && form.controls.clave.touched ? 'clave-error' : null" />
+          </div>
+          @if (form.controls.clave.invalid && form.controls.clave.touched) {
+          <p-message id="clave-error" class="login-field-error" severity="error" size="small" variant="simple">
+            @if (form.controls.clave.errors?.['required']) {
+            La contraseña es obligatoria.
+            } @else if (form.controls.clave.errors?.['minlength']) {
+            La contraseña debe tener al menos 4 caracteres.
+            }
+          </p-message>
+          }
+        </div>
+
+        @if (mensajeError()) {
+        <p-message class="login-alert" severity="error" role="alert">
+          {{ mensajeError() }}
+        </p-message>
+        }
+
+        <p-button class="login-submit" type="submit" [label]="cargando() ? 'Ingresando...' : 'Iniciar sesión'"
+          [icon]="cargando() ? '' : 'pi pi-arrow-right'" iconPos="right" [loading]="cargando()"
+          [disabled]="cargando()" />
+      </form>
+
+      <footer class="login-footer">
+        <div class="login-divider" aria-hidden="true">
+          <span></span>
+          <svg viewBox="0 0 80 75" fill="currentColor">
+            <path d="M39 36C28 25 28 12 41 0c12 13 12 25-2 36Z" />
+            <path d="M34 65C17 65 5 54 3 35c19-1 31 10 31 30Z" />
+            <path d="M44 65C61 64 74 51 75 32 56 35 45 46 44 65Z" />
+          </svg>
+          <span></span>
+        </div>
+        <p>¿Problemas para iniciar sesión? Consultá con administración.</p>
+      </footer>
+    </div>
+  </section>
 </main>
