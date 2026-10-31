@@ -33,6 +33,11 @@ export class ReservasService {
     return this.http.get<Reserva[]>(this.baseUrl, { params });
   }
 
+    consultarDisponibilidad(fecha: string, idMedico: number): Observable<string[]> {
+        const params = new HttpParams().set("fecha", fecha).set("idMedico", idMedico);
+        return this.http.get<string[]>(`${this.baseUrl}/disponibilidad`, { params });
+    }
+
   crearReserva(body: CreateReservaRequest): Observable<CreateReservaResponse> {
     return this.http.post<CreateReservaResponse>(this.baseUrl, body);
   }

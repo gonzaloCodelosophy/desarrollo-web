@@ -5,6 +5,7 @@ import { ReservasService } from "../services/reservas.service.js";
 import { CreateReservaDto } from "../dtos/input/create-reserva.dto.js";
 import { CreateReservaResponseDto } from "../dtos/output/create-reserva-response.dto.js";
 import { ListReservasQueryDto } from "../dtos/input/list-reservas-query.dto.js";
+import { DisponibilidadQueryDto } from "../dtos/input/disponibilidad-query.dto.js";
 import { ReservaDTO } from "../dtos/output/reserva.dto.js";
 import { AuthGuard } from "../../auth/guards/auth.guard.js";
 import { RolesGuard } from "../../auth/guards/roles.guard.js";
@@ -38,6 +39,17 @@ export class ReservasController {
 
       return await this.service.listarReservas(query, this.currentUser(request));
    }
+
+    @ApiOperation({ summary: "Horarios ocupados de un médico en una fecha" })
+    @ApiBearerAuth()
+    @ApiOkResponse({ type: String, isArray: true })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
+    @Get("disponibilidad")
+    async disponibilidad(@Query() query: DisponibilidadQueryDto): Promise<string[]> {
+        const idMedico = Number(query.idMedico);
+        return this.service.horariosOcupados(query.fecha, idMedico);
+    }
 
    @ApiOperation({ summary: 'Cancela un turno' })
    @ApiBearerAuth()

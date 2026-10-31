@@ -1,0 +1,86 @@
+<div class="reserva">
+    @if (exito()) {
+        <div class="reserva-aviso reserva-aviso-exito" role="status">
+            <p>{{ exito() }}</p>
+            <a [routerLink]="destino()" class="reserva-boton">{{ esAdministrador() ? 'Ir a todos los turnos' : 'Ir a mis turnos' }}</a>
+        </div>
+    } @else {
+    <header class="reserva-encabezado">
+        <div><p class="reserva-antetitulo">RESERVAR TURNO</p><h1>{{ esAdministrador() ? 'Nueva reserva' : 'Reservar turno' }}</h1>
+            <p class="reserva-descripcion">{{ esAdministrador() ? 'Completá los datos para asignar un turno a un paciente.' : 'Seleccioná médico, fecha y horario para reservar tu consulta.' }}</p></div>
+    </header>
+    @if (error()) { <p class="reserva-aviso reserva-aviso-error" role="alert">{{ error() }}</p> }
+    @if (cargando()) { <p class="reserva-tarjeta" role="status">Cargando datos para tu reserva…</p> }
+    @else if (errorCatalogos()) {
+        <div class="reserva-aviso reserva-aviso-error" role="alert"><p>{{ errorCatalogos() }}</p><button class="reserva-boton" type="button" (click)="cargarCatalogos()">Reintentar</button></div>
+    } @else {
+        <form class="reserva-columnas" (ngSubmit)="confirmar()">
+            <fieldset class="reserva-campos" [disabled]="enviando()">
+                <legend class="reserva-solo-lectores">Seleccionar los datos de la reserva</legend>
+                @if (esAdministrador()) {
+                    <section class="reserva-tarjeta" aria-labelledby="reserva-paciente">
+                        <h2 id="reserva-paciente">1. Seleccionar paciente</h2>
+                        <label class="reserva-campo">Buscar por nombre o DNI
+                            <input type="search" name="busqueda" [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" placeholder="Nombre, apellido o documento">
+                        </label>
+                        <label class="reserva-campo">Paciente destinatario
+                            <select name="paciente" [ngModel]="pacienteId()" (ngModelChange)="pacienteId.set(+$event); exito.set('')">
+                                <option [ngValue]="0" disabled>Seleccioná un paciente</option>
+                                @for (p of pacientesFiltrados(); track p.id) { <option [ngValue]="p.id">{{ p.apellidos }}, {{ p.nombres }} · DNI {{ p.documento }}</option> }
+                            </select>
+                        </label>
+                        @if (!pacientesFiltrados().length) { <p class="reserva-ayuda">No hay pacientes que coincidan con la búsqueda.</p> }
+                    </section>
+                }
+                <section class="reserva-tarjeta" aria-labelledby="reserva-medico">
+                    <h2 id="reserva-medico">{{ esAdministrador() ? '2' : '1' }}. Seleccionar médico</h2>
+                    <div class="reserva-profesionales" role="group" aria-label="Profesionales médicos">
+                        @for (m of medicos(); track m.id) {
+                            <button type="button" class="reserva-profesional" [class.reserva-profesional-elegido]="medicoId() === m.id" [attr.aria-pressed]="medicoId() === m.id" (click)="seleccionarMedico(m.id)">
+                                <span class="reserva-iniciales" aria-hidden="true">{{ m.nombres.charAt(0) }}{{ m.apellidos.charAt(0) }}</span>
+                                <span><strong>Dr/a. {{ m.nombres }} {{ m.apellidos }}</strong><small>Clínica médica · Matrícula {{ m.matricula }}</small></span>
+                                <span class="reserva-precio">{{ precio(m.valorConsulta) }}</span>
+                            </button>
+                        } @empty { <p class="reserva-ayuda">No hay médicos disponibles para reservar.</p> }
+                    </div>
+                </section>
+            </fieldset>
+            <div class="reserva-columna">
+                <fieldset class="reserva-tarjeta reserva-campos" [disabled]="enviando()">
+                    <legend class="reserva-solo-lectores">Fecha y horario</legend>
+                    <h2>{{ esAdministrador() ? '3' : '2' }}. Fecha y horario</h2>
+                    <label class="reserva-campo">Fecha de la consulta
+                        <input type="date" name="fecha" [min]="fechaMinima" [max]="fechaMaxima" [ngModel]="fecha()" (ngModelChange)="cambiarFecha($event)" required>
+                    </label>
+                    @if (!fechaValida()) { <p class="reserva-aviso reserva-aviso-error" role="alert">Elegí una fecha entre hoy y los próximos 30 días.</p> }
+                    <p class="reserva-ayuda">Horarios de inicio · 08:00 a 15:00 · Hora de Buenos Aires</p>
+                    @if (cargandoHorarios()) { <p role="status">Consultando disponibilidad…</p> }
+                    @if (errorHorarios()) {
+                        <div class="reserva-aviso reserva-aviso-error" role="alert"><p>{{ errorHorarios() }}</p><button type="button" class="reserva-boton reserva-boton-secundario" (click)="consultarHorarios()">Reintentar disponibilidad</button></div>
+                    }
+                    <div class="reserva-horarios" role="group" aria-label="Seleccionar horario de inicio">
+                        @for (h of horarios; track h) {
+                            <button type="button" class="reserva-horario" [class.reserva-horario-elegido]="hora() === h" [attr.aria-pressed]="hora() === h" [disabled]="horarioDeshabilitado(h)" (click)="elegirHora(h)">{{ h }}
+                                @if (ocupados().has(h)) { <small>Ocupado</small> }
+                            </button>
+                        }
+                    </div>
+                    <p class="reserva-nota">Cada turno dura una hora. Podés reservar hasta 30 días de anticipación. Los horarios ocupados no se pueden seleccionar. La disponibilidad se vuelve a verificar al confirmar.</p>
+                </fieldset>
+                <section class="reserva-tarjeta" aria-labelledby="reserva-confirmacion">
+                    <h2 id="reserva-confirmacion">{{ esAdministrador() ? '4' : '3' }}. Confirmación</h2>
+                    <dl class="reserva-resumen">
+                        @if (esAdministrador()) { <div><dt>Paciente</dt><dd>{{ paciente() ? paciente()!.nombres + ' ' + paciente()!.apellidos : 'Sin seleccionar' }}</dd></div> }
+                        <div><dt>Médico</dt><dd>{{ medico() ? medico()!.nombres + ' ' + medico()!.apellidos : 'Sin seleccionar' }}</dd></div>
+                        <div><dt>Fecha</dt><dd>{{ fecha() ? fecha().split('-').reverse().join('/') : 'Sin seleccionar' }}</dd></div>
+                        <div><dt>Horario</dt><dd>{{ hora() || 'Sin seleccionar' }}{{ hora() ? ' · Buenos Aires' : '' }}</dd></div>
+                        <div><dt>Valor de la consulta</dt><dd class="reserva-precio">{{ medico() ? precio(medico()!.valorConsulta) : '—' }}</dd></div>
+                    </dl>
+                    <button type="submit" class="reserva-boton reserva-confirmar" [disabled]="!puedeReservar()" [attr.aria-busy]="enviando()">{{ enviando() ? 'Confirmando…' : 'Confirmar reserva →' }}</button>
+                    <a class="reserva-volver" [routerLink]="destino()">{{ esAdministrador() ? 'Volver a todos los turnos' : 'Volver a Mis turnos' }}</a>
+                </section>
+            </div>
+        </form>
+    }
+    }
+</div>
