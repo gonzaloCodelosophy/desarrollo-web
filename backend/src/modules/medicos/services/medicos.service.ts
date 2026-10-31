@@ -9,49 +9,49 @@ import { EstadoUsuarioEnum } from "../../auth/enums/estado-usuario.enum.js";
 @Injectable()
 export class MedicosService {
 
-    constructor(@InjectRepository(Medico) private readonly repository: Repository<Medico>) { }
+  constructor(@InjectRepository(Medico) private readonly repository: Repository<Medico>) { }
 
-    async obtenerMedicos(): Promise<MedicoDTO[]> {
+  async obtenerMedicos(): Promise<MedicoDTO[]> {
 
-        const medicos: Medico[] = await this.repository.find({
-            relations: { usuario: true },
-            where: { usuario: { estado: EstadoUsuarioEnum.ACTIVO } },
-            order: { id: 'ASC' },
-        });
+    const medicos: Medico[] = await this.repository.find({
+      relations: { usuario: true },
+      where: { usuario: { estado: EstadoUsuarioEnum.ACTIVO } },
+      order: { id: 'ASC' },
+    });
 
-        return medicos.map((medico) => {
-            const dto = new MedicoDTO();
-            dto.id = medico.id;
-            dto.nombres = medico.usuario.nombres;
-            dto.apellidos = medico.usuario.apellidos;
-            dto.matricula = medico.matricula;
-            dto.valorConsulta = medico.valorConsulta;
-            return dto;
-        });
+    return medicos.map((medico) => {
+      const dto = new MedicoDTO();
+      dto.id = medico.id;
+      dto.nombres = medico.usuario.nombres;
+      dto.apellidos = medico.usuario.apellidos;
+      dto.matricula = medico.matricula;
+      dto.valorConsulta = medico.valorConsulta;
+      return dto;
+    });
+  }
+
+  async actualizarValorConsulta(id: number, dto: UpdateValorConsultaDto): Promise<void> {
+
+    const medico: Medico | null = await this.repository.findOne({ where: { id } });
+
+    if (!medico) {
+      throw new BadRequestException('El médico indicado no existe');
     }
 
-    async actualizarValorConsulta(id: number, dto: UpdateValorConsultaDto): Promise<void> {
+    medico.valorConsulta = dto.valorConsulta;
 
-        const medico: Medico | null = await this.repository.findOne({ where: { id } });
+    await this.repository.save(medico);
+  }
 
-        if (!medico) {
-            throw new BadRequestException('El médico indicado no existe');
-        }
+  async buscarPorIdOrFail(id: number): Promise<Medico> {
 
-        medico.valorConsulta = dto.valorConsulta;
+    const medico: Medico | null = await this.repository.findOne({ where: { id } });
 
-        await this.repository.save(medico);
+    if (!medico) {
+      throw new BadRequestException('El médico indicado no existe');
     }
 
-    async buscarPorIdOrFail(id: number): Promise<Medico> {
-
-        const medico: Medico | null = await this.repository.findOne({ where: { id } });
-
-        if (!medico) {
-            throw new BadRequestException('El médico indicado no existe');
-        }
-
-        return medico;
-    }
+    return medico;
+  }
 
 }

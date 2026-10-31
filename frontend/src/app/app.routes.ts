@@ -32,7 +32,8 @@ export const routes: Routes = [
         path: 'medico/agenda',
         canActivate: [roleGuard],
         data: { roles: ['MEDICO'], title: 'Agenda Médica' },
-        component: PlaceholderComponent,
+        loadComponent: () =>
+          import('./features/medico/agenda/agenda').then((m) => m.AgendaComponent),
       },
       {
         path: 'administracion/turnos',

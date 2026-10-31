@@ -5,22 +5,22 @@ import { PacienteResumenDTO } from "./paciente-resumen.dto.js";
 
 export class ReservaDTO {
 
-    @ApiProperty()
-    id!: number;
+   @ApiProperty()
+   id!: number;
 
-    @ApiProperty()
-    fechaHora!: Date;
+   @ApiProperty()
+   fechaHora!: Date;
 
-    @ApiProperty({ enum: EstadoReservaEnum })
-    estado!: EstadoReservaEnum;
+   @ApiProperty({ enum: EstadoReservaEnum })
+   estado!: EstadoReservaEnum;
 
-    @ApiProperty()
-    valorConsulta!: number;
+   @ApiProperty()
+   valorConsulta!: number;
 
-    @ApiProperty({ type: MedicoResumenDTO })
-    medico!: MedicoResumenDTO;
+   @ApiProperty({ type: MedicoResumenDTO })
+   medico!: MedicoResumenDTO;
 
-    @ApiProperty({ type: PacienteResumenDTO })
-    paciente!: PacienteResumenDTO;
+   @ApiProperty({ type: PacienteResumenDTO })
+   paciente!: PacienteResumenDTO;
 
 }

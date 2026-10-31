@@ -7,10 +7,10 @@ import { AuthModule } from "../auth/auth.module.js";
 import { MedicosModule } from "../medicos/medicos.module.js";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Reserva]), AuthModule, MedicosModule],
-    controllers: [ReservasController],
-    providers: [ReservasService],
-    exports: [],
+   imports: [TypeOrmModule.forFeature([Reserva]), AuthModule, MedicosModule],
+   controllers: [ReservasController],
+   providers: [ReservasService],
+   exports: [],
 })
 export class ReservasModule {
 

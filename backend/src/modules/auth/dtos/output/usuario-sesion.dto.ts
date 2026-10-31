@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { RolUsuarioEnum } from "../../enums/rol-usuario.enum.js";
+import { ApiProperty } from '@nestjs/swagger';
+import { RolUsuarioEnum } from '../../enums/rol-usuario.enum.js';
 
 export class UsuarioSesionDTO {
 

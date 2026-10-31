@@ -1,5 +1,5 @@
 
 export enum EstadoUsuarioEnum {
-    "ACTIVO" = "ACTIVO",
-    "BAJA" = "BAJA"
+    'ACTIVO' = 'ACTIVO',
+    'BAJA' = 'BAJA'
 }

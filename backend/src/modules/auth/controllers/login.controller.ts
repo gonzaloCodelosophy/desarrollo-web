@@ -1,19 +1,19 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { LoginDTO } from "../dtos/input/login.dto.js";
-import { LoginResponseDTO } from "../dtos/output/login-response.dto.js";
-import { AuthService } from "../services/auth.service.js";
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginDTO } from '../dtos/input/login.dto.js';
+import { LoginResponseDTO } from '../dtos/output/login-response.dto.js';
+import { AuthService } from '../services/auth.service.js';
 
 @ApiTags('auth')
-@Controller("/auth")
+@Controller('/auth')
 export class LoginController {
 
-    constructor(private readonly service: AuthService) { }
+    constructor(private service: AuthService){}
 
-    @ApiOperation({ summary: 'Inicia sesión con documento y clave, solo para usuarios activos' })
+    @ApiOperation({ summary: 'Login con documento y clave' })
     @Post()
-    async login(@Body() dto: LoginDTO): Promise<LoginResponseDTO> {
-        return await this.service.login(dto);
+    async iniciarSesion(@Body() dto: LoginDTO): Promise<LoginResponseDTO> {
+        return this.service.login(dto);
     }
 
 }

@@ -12,26 +12,26 @@ import { RolUsuarioEnum } from "../../auth/enums/rol-usuario.enum.js";
 @Controller('medicos')
 export class MedicosController {
 
-    constructor(private readonly service: MedicosService) { }
+  constructor(private readonly service: MedicosService) { }
 
-    @ApiOperation({ summary: 'Lista los médicos activos de la clínica' })
-    @ApiBearerAuth()
-    @ApiOkResponse({ type: MedicoDTO, isArray: true })
-    @UseGuards(AuthGuard)
-    @Get()
-    async obtenerMedicos(): Promise<MedicoDTO[]> {
+  @ApiOperation({ summary: 'Lista de médicos' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: MedicoDTO, isArray: true })
+  @UseGuards(AuthGuard)
+  @Get()
+  async obtenerMedicos(): Promise<MedicoDTO[]> {
 
-        return await this.service.obtenerMedicos();
-    }
+    return await this.service.obtenerMedicos();
+  }
 
-    @ApiOperation({ summary: 'Modifica el valor de la consulta de un médico (solo administradores)' })
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RolUsuarioEnum.ADMINISTRADOR)
-    @Patch(':id/valor-consulta')
-    async actualizarValorConsulta(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateValorConsultaDto): Promise<void> {
+  @ApiOperation({ summary: 'Cambia el valor de la consulta' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolUsuarioEnum.ADMINISTRADOR)
+  @Patch(':id/valor-consulta')
+  async actualizarValorConsulta(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateValorConsultaDto): Promise<void> {
 
-        await this.service.actualizarValorConsulta(id, dto);
-    }
+    await this.service.actualizarValorConsulta(id, dto);
+  }
 
 }

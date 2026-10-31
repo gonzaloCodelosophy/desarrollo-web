@@ -1,0 +1,76 @@
+<header class="page-header">
+  <div>
+    <p class="eyebrow">AGENDA DE TURNOS</p>
+    <h1>Agenda de turnos</h1>
+    <p class="page-subtitle">Consultá los pacientes de una fecha y marcá atendido o ausente.</p>
+  </div>
+</header>
+@if (exito()) { <p class="alert alert-success" role="status">{{ exito() }}</p> }
+@if (error()) { <p class="alert alert-error" role="alert">{{ error() }}</p> }
+<div class="agenda-grid">
+  <section class="card agenda-turnos" aria-labelledby="turnos-titulo" [attr.aria-busy]="cargando()">
+    <div class="card-header">
+      <h2 id="turnos-titulo">Turnos del día @if (!cargando()) { ({{ resumen().total }}) }</h2>
+      <div class="fecha-controles">
+        <label for="fecha-agenda">Fecha de consulta
+          <input id="fecha-agenda" type="date" [value]="fecha()" [disabled]="guardando()" (change)="cambiarFecha($any($event.target).value)">
+        </label>
+        <button class="btn btn-outline btn-sm" (click)="cambiarFecha(hoy())" [disabled]="guardando()">Hoy</button>
+        <button class="btn btn-outline btn-sm" (click)="cargar()" [disabled]="cargando() || guardando()">Actualizar</button>
+      </div>
+    </div>
+    @if (confirmacion(); as accion) {
+      <section class="alert alert-warning confirmacion" aria-label="Confirmar cambio de estado">
+        <p>¿Marcar a <strong>{{ accion.reserva.paciente.nombres }} {{ accion.reserva.paciente.apellidos }}</strong>, del turno de las {{ accion.reserva.fechaHora | date:'HH:mm' }}, como <strong>{{ textoEstado(accion.estado).toLowerCase() }}</strong>?</p>
+        <p>Este cambio es definitivo.</p>
+        <div class="table-actions">
+          <button class="btn" (click)="confirmar()" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Confirmar cambio' }}</button>
+          <button class="btn btn-outline" (click)="confirmacion.set(null)" [disabled]="guardando()">Volver</button>
+        </div>
+      </section>
+    }
+    @if (cargando()) {
+      <p class="table-empty" role="status">Cargando tu agenda…</p>
+    } @else if (reservas().length) {
+      <div class="table-container">
+        <table class="table">
+          <caption class="sr-only">Turnos médicos del {{ fecha() }}</caption>
+          <thead><tr><th scope="col">Horario</th><th scope="col">Paciente</th><th scope="col">DNI</th><th scope="col">Estado</th><th scope="col">Valor</th><th scope="col">Acciones</th></tr></thead>
+          <tbody>
+            @for (reserva of reservas(); track reserva.id) {
+              <tr>
+                <td><strong>{{ reserva.fechaHora | date:'HH:mm' }}</strong></td>
+                <td>{{ reserva.paciente.nombres }} {{ reserva.paciente.apellidos }}</td>
+                <td>{{ reserva.paciente.documento || '—' }}</td>
+                <td><span class="badge" [class]="'badge ' + claseEstado(reserva.estado)">{{ textoEstado(reserva.estado) }}</span></td>
+                <td class="importe">{{ reserva.valorConsulta | currency:'ARS':'symbol-narrow':'1.0-2':'es-AR' }}</td>
+                <td>
+                  @if (reserva.estado === 'ACTIVO') {
+                    <div class="table-actions">
+                      <button class="btn btn-success btn-sm" [disabled]="guardando() || esFutura(reserva)" [attr.title]="esFutura(reserva) ? 'No se puede marcar como atendido un turno con fecha posterior a hoy' : null" (click)="solicitar(reserva, 'ATENDIDO')" [attr.aria-label]="'Marcar atendido a ' + reserva.paciente.nombres + ' ' + reserva.paciente.apellidos">Atendido</button>
+                      <button class="btn btn-danger btn-sm" [disabled]="guardando() || esFutura(reserva)" [attr.title]="esFutura(reserva) ? 'No se puede marcar como ausente un turno con fecha posterior a hoy' : null" (click)="solicitar(reserva, 'AUSENTE')" [attr.aria-label]="'Marcar ausente a ' + reserva.paciente.nombres + ' ' + reserva.paciente.apellidos">Ausente</button>
+                    </div>
+                  } @else { <span class="finalizado">Finalizado</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else if (!error()) {
+      <div class="table-empty"><h3>Tu agenda está libre</h3><p>No hay turnos para la fecha seleccionada.</p></div>
+    }
+  </section>
+  <aside class="card resumen" aria-labelledby="resumen-titulo">
+    <h2 id="resumen-titulo">Resumen del día</h2>
+    @if (cargando()) { <p role="status">Cargando resumen…</p> } @else {
+      <div class="estadisticas">
+        <div class="estadistica total"><strong>{{ resumen().total }}</strong><span>Total</span></div>
+        <div class="estadistica atendidos"><strong>{{ resumen().atendidos }}</strong><span>Atendidos</span></div>
+        <div class="estadistica ausentes"><strong>{{ resumen().ausentes }}</strong><span>Ausentes</span></div>
+        <div class="estadistica pendientes"><strong>{{ resumen().pendientes }}</strong><span>Pendientes</span></div>
+      </div>
+    }
+    <p class="nota">Atendido y ausente son estados finales. Confirmá el paciente y el horario antes de guardar.</p>
+  </aside>
+</div>

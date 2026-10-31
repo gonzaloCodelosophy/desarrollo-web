@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UsuarioSesionDTO } from "./usuario-sesion.dto.js";
+import { ApiProperty } from '@nestjs/swagger';
+import { UsuarioSesionDTO } from './usuario-sesion.dto.js';
 
 export class LoginResponseDTO {
 

@@ -1,10 +1,5 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UsuariosService } from "../services/usuarios.service.js";
 import { AuthGuard } from "../guards/auth.guard.js";
 import { RolesGuard } from "../guards/roles.guard.js";
@@ -15,7 +10,7 @@ import { PacienteResumenDTO } from "../../reservas/dtos/output/paciente-resumen.
 @ApiTags("pacientes")
 @Controller("pacientes")
 export class PacientesController {
-  constructor(private readonly usuariosService: UsuariosService) {}
+  constructor(private readonly service: UsuariosService) {}
 
   @ApiOperation({
     summary: "Lista los pacientes activos de la clínica (solo administradores)",
@@ -25,7 +20,7 @@ export class PacientesController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(RolUsuarioEnum.ADMINISTRADOR)
   @Get()
-  async obtenerPacientesActivos(): Promise<PacienteResumenDTO[]> {
-    return await this.usuariosService.obtenerPacientesActivos();
+  async listarPacientes(): Promise<PacienteResumenDTO[]> {
+    return this.service.obtenerPacientesActivos();
   }
 }

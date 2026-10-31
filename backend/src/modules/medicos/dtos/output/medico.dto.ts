@@ -2,19 +2,19 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class MedicoDTO {
 
-    @ApiProperty()
-    id!: number;
+  @ApiProperty()
+  id!: number;
 
-    @ApiProperty()
-    nombres!: string;
+  @ApiProperty()
+  nombres!: string;
 
-    @ApiProperty()
-    apellidos!: string;
+  @ApiProperty()
+  apellidos!: string;
 
-    @ApiProperty()
-    matricula!: number;
+  @ApiProperty()
+  matricula!: number;
 
-    @ApiProperty()
-    valorConsulta!: number;
+  @ApiProperty()
+  valorConsulta!: number;
 
 }
