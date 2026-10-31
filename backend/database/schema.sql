@@ -37,10 +37,6 @@ CREATE TABLE reservas (
     valor_consulta  INT NOT NULL
 );
 
-CREATE UNIQUE INDEX reservas_medico_horario_activo_idx
-    ON reservas (id_medico, fecha_hora)
-    WHERE estado <> 'CANCELADO';
-
 
 INSERT INTO usuarios (documento, apellidos, nombres, email, clave, estado, rol) VALUES
 ('10000001', 'Administrador', 'Sistema', 'admin@clinica.com', '$2b$10$JueOiHaeY6.WoVnsRP6pg.GSu4.1.JSarGNHzGms6yQB3iJgHQBaC', 'ACTIVO', 'ADMINISTRADOR');
@@ -61,3 +57,11 @@ INSERT INTO usuarios (documento, apellidos, nombres, email, clave, estado, rol) 
 ('30000001', 'Rodríguez', 'Carlos', 'carlos.rodriguez@mail.com', '$2b$10$JueOiHaeY6.WoVnsRP6pg.GSu4.1.JSarGNHzGms6yQB3iJgHQBaC', 'ACTIVO', 'PACIENTE'),
 ('30000002', 'Díaz', 'Sofía', 'sofia.diaz@mail.com', '$2b$10$JueOiHaeY6.WoVnsRP6pg.GSu4.1.JSarGNHzGms6yQB3iJgHQBaC', 'ACTIVO', 'PACIENTE'),
 ('30000003', 'Torres', 'Juan', 'juan.torres@mail.com', '$2b$10$JueOiHaeY6.WoVnsRP6pg.GSu4.1.JSarGNHzGms6yQB3iJgHQBaC', 'ACTIVO', 'PACIENTE');
+
+
+
+
+
+CREATE UNIQUE INDEX reservas_medico_horario_activo_idx
+    ON reservas (id_medico, fecha_hora)
+    WHERE estado <> 'CANCELADO';
