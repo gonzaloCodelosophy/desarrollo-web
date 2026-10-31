@@ -10,38 +10,25 @@ import { PacienteResumenDTO } from "../../reservas/dtos/output/paciente-resumen.
 @Injectable()
 export class UsuariosService {
   constructor(
-    @InjectRepository(Usuario) private readonly repository: Repository<Usuario>,
-    @InjectRepository(Medico)
-    private readonly medicosRepository: Repository<Medico>,
+    @InjectRepository(Usuario) private readonly usuarioRepo: Repository<Usuario>,
+    @InjectRepository(Medico) private readonly medicoRepo: Repository<Medico>,
   ) {}
 
-  async buscarUsuarioActivoPorDocumento(
-    documento: string,
-  ): Promise<Usuario | null> {
-    return await this.repository.findOne({
+  async buscarUsuarioActivoPorDocumento(documento: string): Promise<Usuario | null> {
+    return this.usuarioRepo.findOne({
       where: { documento, estado: EstadoUsuarioEnum.ACTIVO },
     });
   }
 
-  async buscarIdMedicoPorIdUsuario(
-    idUsuario: number,
-  ): Promise<number | undefined> {
-    const medico = await this.medicosRepository.findOne({
-      where: { idUsuario },
-    });
+  async buscarIdMedicoPorIdUsuario(idUsuario: number): Promise<number | undefined> {
+    const medico = await this.medicoRepo.findOne({ where: { idUsuario } });
     return medico?.id;
   }
 
   async obtenerPacientesActivos(): Promise<PacienteResumenDTO[]> {
-    const pacientes = await this.repository.find({
-      where: {
-        rol: RolUsuarioEnum.PACIENTE,
-        estado: EstadoUsuarioEnum.ACTIVO,
-      },
-      order: {
-        apellidos: "ASC",
-        nombres: "ASC",
-      },
+    const pacientes = await this.usuarioRepo.find({
+      where: { rol: RolUsuarioEnum.PACIENTE, estado: EstadoUsuarioEnum.ACTIVO },
+      order: { apellidos: "ASC", nombres: "ASC" },
     });
 
     return pacientes.map((p) => ({

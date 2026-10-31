@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "deploy":"npm install && npm run build && npm run nginx:limpiar && npm run nginx:llenar",
+    "nginx:llenar":"mkdir -p ~/desarrollo-web/html && cp -r dist/frontend/browser/. ~/desarrollo-web/html/",
+    "nginx:limpiar":"rm -rf ~/desarrollo-web/html/*",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "compodoc": "compodoc -p tsconfig.app.json -s"

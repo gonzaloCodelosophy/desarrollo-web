@@ -44,4 +44,17 @@ export class ReservasService {
   cancelarReserva(id: number): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/${id}/cancelar`, {});
   }
+
+  marcarAtendido(id: number){
+    return this.http.patch<void>(
+      `${this.baseUrl}/${id}/atender`, 
+      {}
+    );
+  }
+
+  marcarAusente(id: number){
+    return this.http.patch<void>(
+      `${this.baseUrl}/${id}/ausente`,      {}
+    );
+  }
 }

@@ -6,30 +6,30 @@ import type { Usuario } from "../../auth/entities/usuario.entity.js";
 @Entity({ name: "reservas" })
 export class Reserva {
 
-    @PrimaryGeneratedColumn()
-    id: number
+   @PrimaryGeneratedColumn()
+   id: number
 
-    @Column({ name: "id_medico" })
-    idMedico: number
+   @Column({ name: "id_medico" })
+   idMedico: number
 
-    @ManyToOne("Medico")
-    @JoinColumn({ name: "id_medico" })
-    medico: Medico
+   @ManyToOne("Medico")
+   @JoinColumn({ name: "id_medico" })
+   medico: Medico
 
-    @Column({ name: "id_paciente" })
-    idPaciente: number
+   @Column({ name: "id_paciente" })
+   idPaciente: number
 
-    @ManyToOne("Usuario")
-    @JoinColumn({ name: "id_paciente" })
-    paciente: Usuario
+   @ManyToOne("Usuario")
+   @JoinColumn({ name: "id_paciente" })
+   paciente: Usuario
 
-    @Column({ name: "fecha_hora", type: "timestamp" })
-    fechaHora: Date
+   @Column({ name: "fecha_hora", type: "timestamp" })
+   fechaHora: Date
 
-    @Column({ type: "enum", enum: EstadoReservaEnum, enumName: "estados_reservas" })
-    estado: EstadoReservaEnum
+   @Column({ type: "enum", enum: EstadoReservaEnum, enumName: "estados_reservas" })
+   estado: EstadoReservaEnum
 
-    @Column({ name: "valor_consulta" })
-    valorConsulta: number
+   @Column({ name: "valor_consulta" })
+   valorConsulta: number
 
 }

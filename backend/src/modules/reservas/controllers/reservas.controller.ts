@@ -16,62 +16,62 @@ import type { JwtPayload } from "../../auth/interfaces/jwt-payload.interface.js"
 @Controller('reservas')
 export class ReservasController {
 
-    constructor(private readonly service: ReservasService) { }
+   constructor(private readonly service: ReservasService) { }
 
-    @ApiOperation({ summary: 'Reserva un turno (pacientes para sí mismos, administradores para cualquier paciente)' })
-    @ApiBearerAuth()
-    @ApiCreatedResponse({ type: CreateReservaResponseDto })
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
-    @Post()
-    async crearReserva(@Body() dto: CreateReservaDto, @Req() request: Request): Promise<CreateReservaResponseDto> {
+   @ApiOperation({ summary: 'Reserva un turno' })
+   @ApiBearerAuth()
+   @ApiCreatedResponse({ type: CreateReservaResponseDto })
+   @UseGuards(AuthGuard, RolesGuard)
+   @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
+   @Post()
+   async crearReserva(@Body() dto: CreateReservaDto, @Req() request: Request): Promise<CreateReservaResponseDto> {
 
-        return await this.service.crearReserva(dto, this.currentUser(request));
-    }
+      return await this.service.crearReserva(dto, this.currentUser(request));
+   }
 
-    @ApiOperation({ summary: 'Lista turnos: propios para médico/paciente, todos (con filtros) para administrador' })
-    @ApiBearerAuth()
-    @ApiOkResponse({ type: ReservaDTO, isArray: true })
-    @UseGuards(AuthGuard)
-    @Get()
-    async listarReservas(@Query() query: ListReservasQueryDto, @Req() request: Request): Promise<ReservaDTO[]> {
+   @ApiOperation({ summary: 'Lista los turnos' })
+   @ApiBearerAuth()
+   @ApiOkResponse({ type: ReservaDTO, isArray: true })
+   @UseGuards(AuthGuard)
+   @Get()
+   async listarReservas(@Query() query: ListReservasQueryDto, @Req() request: Request): Promise<ReservaDTO[]> {
 
-        return await this.service.listarReservas(query, this.currentUser(request));
-    }
+      return await this.service.listarReservas(query, this.currentUser(request));
+   }
 
-    @ApiOperation({ summary: 'Cancela un turno (paciente hasta el día anterior, administrador hasta el inicio)' })
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
-    @Patch(':id/cancelar')
-    async cancelarReserva(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
+   @ApiOperation({ summary: 'Cancela un turno' })
+   @ApiBearerAuth()
+   @UseGuards(AuthGuard, RolesGuard)
+   @Roles(RolUsuarioEnum.PACIENTE, RolUsuarioEnum.ADMINISTRADOR)
+   @Patch(':id/cancelar')
+   async cancelarReserva(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
 
-        await this.service.cancelarReserva(id, this.currentUser(request));
-    }
+      await this.service.cancelarReserva(id, this.currentUser(request));
+   }
 
-    @ApiOperation({ summary: 'Marca un turno propio como atendido (solo médicos)' })
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RolUsuarioEnum.MEDICO)
-    @Patch(':id/atender')
-    async marcarAtendido(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
+   @ApiOperation({ summary: 'Marca el turno como atendido' })
+   @ApiBearerAuth()
+   @UseGuards(AuthGuard, RolesGuard)
+   @Roles(RolUsuarioEnum.MEDICO)
+   @Patch(':id/atender')
+   async marcarAtendido(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
 
-        await this.service.marcarAtendido(id, this.currentUser(request));
-    }
+      await this.service.marcarAtendido(id, this.currentUser(request));
+   }
 
-    @ApiOperation({ summary: 'Marca un turno propio como ausente (solo médicos)' })
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RolUsuarioEnum.MEDICO)
-    @Patch(':id/ausente')
-    async marcarAusente(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
+   @ApiOperation({ summary: 'Marca el turno como ausente' })
+   @ApiBearerAuth()
+   @UseGuards(AuthGuard, RolesGuard)
+   @Roles(RolUsuarioEnum.MEDICO)
+   @Patch(':id/ausente')
+   async marcarAusente(@Param('id', ParseIntPipe) id: number, @Req() request: Request): Promise<void> {
 
-        await this.service.marcarAusente(id, this.currentUser(request));
-    }
+      await this.service.marcarAusente(id, this.currentUser(request));
+   }
 
-    private currentUser(request: Request): JwtPayload {
-        return (request as any)['usuario'] as JwtPayload;
-    }
+   private currentUser(request: Request): JwtPayload {
+      return (request as any)['usuario'] as JwtPayload;
+   }
 
 }
 

@@ -19,10 +19,10 @@ export class RolesGuard implements CanActivate {
         }
 
         const request = context.switchToHttp().getRequest();
-        const usuario: JwtPayload = request['usuario'];
+        const usuario: JwtPayload = request["usuario"];
 
         if (!usuario || !rolesPermitidos.includes(usuario.rol)) {
-            throw new ForbiddenException('No tiene permisos para realizar esta acción');
+            throw new ForbiddenException("No tiene permisos para realizar esta acción");
         }
 
         return true;

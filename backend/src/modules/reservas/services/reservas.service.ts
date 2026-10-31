@@ -11,80 +11,76 @@ import { MedicosService } from "../../medicos/services/medicos.service.js";
 import { RolUsuarioEnum } from "../../auth/enums/rol-usuario.enum.js";
 import type { JwtPayload } from "../../auth/interfaces/jwt-payload.interface.js";
 
-const HORA_APERTURA = 8;
-const HORA_CIERRE = 16;
-const MAX_DIAS_ANTICIPACION = 30;
-
 @Injectable()
 export class ReservasService {
 
-    constructor(
-        @InjectRepository(Reserva) private readonly repository: Repository<Reserva>,
-        private readonly medicosService: MedicosService) { }
+   constructor(
+      @InjectRepository(Reserva) private readonly repository: Repository<Reserva>,
+      private readonly medicosService: MedicosService) { }
 
-    async crearReserva(dto: CreateReservaDto, currentUser: JwtPayload): Promise<CreateReservaResponseDto> {
+   async crearReserva(dto: CreateReservaDto, currentUser: JwtPayload): Promise<CreateReservaResponseDto> {
 
-        const idPaciente = this.resolverIdPaciente(dto, currentUser);
-        const fechaHora = new Date(dto.fechaHora);
+      const idPaciente = this.resolverIdPaciente(dto, currentUser);
+      const fechaHora = new Date(dto.fechaHora);
 
-        this.validarSlotHorario(fechaHora);
-        this.validarAnticipacion(fechaHora);
+      this.validarSlotHorario(fechaHora);
+      this.validarAnticipacion(fechaHora);
 
-        const medico = await this.medicosService.buscarPorIdOrFail(dto.idMedico);
+      const medico = await this.medicosService.buscarPorIdOrFail(dto.idMedico);
 
-        const conflicto = await this.repository.exists({
-            where: {
-                idMedico: dto.idMedico,
-                fechaHora,
-                estado: Not(EstadoReservaEnum.CANCELADO),
-            },
-        });
-
-        if (conflicto) {
-            throw new ConflictException('El médico ya tiene un turno reservado en ese horario');
-        }
-
-        const reserva = this.repository.create({
+      const conflicto = await this.repository.exists({
+         where: {
             idMedico: dto.idMedico,
-            idPaciente,
             fechaHora,
-            estado: EstadoReservaEnum.ACTIVO,
-            valorConsulta: medico.valorConsulta,
-        });
+            estado: Not(EstadoReservaEnum.CANCELADO),
+         },
+      });
 
-        try {
-            await this.repository.save(reserva);
-        } catch (error: any) {
-            if (error?.code === '23505') {
-                throw new ConflictException('El médico ya tiene un turno reservado en ese horario');
-            }
-            throw error;
-        }
+      if (conflicto) {
+         throw new ConflictException('El médico ya tiene un turno reservado en ese horario');
+      }
 
-        return { id: reserva.id };
-    }
+      const reserva = this.repository.create({
+         idMedico: dto.idMedico,
+         idPaciente,
+         fechaHora,
+         estado: EstadoReservaEnum.ACTIVO,
+         valorConsulta: medico.valorConsulta,
+      });
 
-    async listarReservas(query: ListReservasQueryDto, currentUser: JwtPayload): Promise<ReservaDTO[]> {
+      try {
+         await this.repository.save(reserva);
+      } catch (error: any) {
+         if (error?.code === '23505') {
+            throw new ConflictException('El médico ya tiene un turno reservado en ese horario');
+         }
+         throw error;
+      }
 
-        const where: Record<string, unknown> = {};
+      return { id: reserva.id };
+   }
 
-        if (currentUser.rol === RolUsuarioEnum.PACIENTE) {
-            where.idPaciente = currentUser.sub;
-        } else if (currentUser.rol === RolUsuarioEnum.MEDICO) {
-            if (!query.fecha) {
-                throw new BadRequestException('Se debe indicar la fecha para listar los turnos');
-            }
-            where.idMedico = currentUser.idMedico;
-        } else if (query.idMedico) {
-            where.idMedico = Number(query.idMedico);
-        }
+   async listarReservas(query: ListReservasQueryDto, currentUser: JwtPayload): Promise<ReservaDTO[]> {
 
-        const reservas = await this.buscarConFiltros(where, query.fecha);
+      const where: Record<string, unknown> = {};
 
-        return reservas.map((reserva) => this.aDTO(reserva));
-    }
+      if (currentUser.rol === RolUsuarioEnum.PACIENTE) {
+         where.idPaciente = currentUser.sub;
+      } else if (currentUser.rol === RolUsuarioEnum.MEDICO) {
+         if (!query.fecha) {
+            throw new BadRequestException('Se debe indicar la fecha para listar los turnos');
+         }
+         where.idMedico = currentUser.idMedico;
+      } else if (query.idMedico) {
+         where.idMedico = Number(query.idMedico);
+      }
 
-    async cancelarReserva(id: number, currentUser: JwtPayload): Promise<void> {
+      const reservas = await this.buscarConFiltros(where, query.fecha);
+
+      return reservas.map((reserva) => this.aDTO(reserva));
+   }
+
+   async cancelarReserva(id: number, currentUser: JwtPayload): Promise<void> {
 
         await this.repository.manager.transaction(async (manager) => {
             const reserva = await this.buscarPorIdConBloqueo(manager, id);
@@ -113,17 +109,17 @@ export class ReservasService {
             reserva.estado = EstadoReservaEnum.CANCELADO;
             await manager.save(reserva);
         });
-    }
+   }
 
-    async marcarAtendido(id: number, currentUser: JwtPayload): Promise<void> {
-        await this.cambiarEstadoComoMedico(id, currentUser, EstadoReservaEnum.ATENDIDO);
-    }
+   async marcarAtendido(id: number, currentUser: JwtPayload): Promise<void> {
+      await this.cambiarEstadoComoMedico(id, currentUser, EstadoReservaEnum.ATENDIDO);
+   }
 
-    async marcarAusente(id: number, currentUser: JwtPayload): Promise<void> {
-        await this.cambiarEstadoComoMedico(id, currentUser, EstadoReservaEnum.AUSENTE);
-    }
+   async marcarAusente(id: number, currentUser: JwtPayload): Promise<void> {
+      await this.cambiarEstadoComoMedico(id, currentUser, EstadoReservaEnum.AUSENTE);
+   }
 
-    private async cambiarEstadoComoMedico(id: number, currentUser: JwtPayload, estado: EstadoReservaEnum): Promise<void> {
+   private async cambiarEstadoComoMedico(id: number, currentUser: JwtPayload, estado: EstadoReservaEnum): Promise<void> {
 
         await this.repository.manager.transaction(async (manager) => {
             const reserva = await this.buscarPorIdConBloqueo(manager, id);
@@ -139,98 +135,98 @@ export class ReservasService {
             reserva.estado = estado;
             await manager.save(reserva);
         });
-    }
+   }
 
-    private resolverIdPaciente(dto: CreateReservaDto, currentUser: JwtPayload): number {
+   private resolverIdPaciente(dto: CreateReservaDto, currentUser: JwtPayload): number {
 
-        if (currentUser.rol === RolUsuarioEnum.PACIENTE) {
-            return currentUser.sub;
-        }
+      if (currentUser.rol === RolUsuarioEnum.PACIENTE) {
+         return currentUser.sub;
+      }
 
-        if (!dto.idPaciente) {
-            throw new BadRequestException('Se debe indicar el paciente para el turno');
-        }
+      if (!dto.idPaciente) {
+         throw new BadRequestException('Se debe indicar el paciente para el turno');
+      }
 
-        return dto.idPaciente;
-    }
+      return dto.idPaciente;
+   }
 
-    private validarSlotHorario(fechaHora: Date): void {
+   private validarSlotHorario(fechaHora: Date): void {
 
-        if (fechaHora.getMinutes() !== 0 || fechaHora.getSeconds() !== 0 || fechaHora.getMilliseconds() !== 0) {
-            throw new BadRequestException('El turno debe iniciar en punto');
-        }
+      if (fechaHora.getMinutes() !== 0 || fechaHora.getSeconds() !== 0 || fechaHora.getMilliseconds() !== 0) {
+         throw new BadRequestException('El turno debe iniciar en punto');
+      }
 
-        const hora = fechaHora.getHours();
+      const hora = fechaHora.getHours();
 
-        if (hora < HORA_APERTURA || hora >= HORA_CIERRE) {
-            throw new BadRequestException(`El horario de atención es de ${HORA_APERTURA}hs a ${HORA_CIERRE}hs`);
-        }
-    }
+      /* chicos: la hora de apertura es 8 y cierra a las 16, o sea que el ultimo turno es a las 15 */
+      if(hora < 8 || hora >= 16){
+         throw new BadRequestException('El horario de atención es de 8hs a 16hs');
+      }
+   }
 
-    private validarAnticipacion(fechaHora: Date): void {
+   /*  chicos: se puede reservar hasta 30 dias adelante, contando hasta el final de ese dia
+      samuel encontro un tema con esto, cuando canela a veces a veces queda el turno como tomado en vez 
+      de liberarlo 
+   */
+   private validarAnticipacion(fechaHora: Date): void {
 
-        const ahora = new Date();
+      const ahora = new Date();
 
-        if (fechaHora < ahora) {
-            throw new BadRequestException('No se puede reservar un turno en el pasado');
-        }
+      if (fechaHora < ahora) {
+         throw new BadRequestException('No se puede reservar un turno en el pasado');
+      }
 
-        const limite = new Date(ahora);
-        limite.setDate(limite.getDate() + MAX_DIAS_ANTICIPACION);
-        limite.setHours(23, 59, 59, 999);
+      const limite = new Date(ahora);
+      limite.setDate(limite.getDate() + 30);
+      limite.setHours(23, 59, 59, 999);
 
-        if (fechaHora > limite) {
-            throw new BadRequestException(`Las reservas se pueden realizar con un máximo de ${MAX_DIAS_ANTICIPACION} días de anticipación`);
-        }
-    }
+      if(fechaHora > limite){
+         throw new BadRequestException('Las reservas se pueden realizar con un máximo de 30 días de anticipación');
+      }
+   }
 
-    private inicioDelDia(fecha: Date): Date {
-        return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-    }
+   private inicioDelDia(fecha: Date): Date {
+      return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+   }
 
-    private rangoDelDia(fecha: string): { desde: Date; hasta: Date } {
-        const desde = new Date(`${fecha}T00:00:00`);
-        const hasta = new Date(`${fecha}T23:59:59.999`);
-        return { desde, hasta };
-    }
+   private async buscarConFiltros(where: Record<string, unknown>, fecha?: string): Promise<Reserva[]> {
 
-    private async buscarConFiltros(where: Record<string, unknown>, fecha?: string): Promise<Reserva[]> {
+      const qb = this.repository.createQueryBuilder('reserva')
+         .leftJoinAndSelect('reserva.medico', 'medico')
+         .leftJoinAndSelect('medico.usuario', 'medicoUsuario')
+         .leftJoinAndSelect('reserva.paciente', 'paciente')
+         .orderBy('reserva.fechaHora', 'ASC');
 
-        const qb = this.repository.createQueryBuilder('reserva')
-            .leftJoinAndSelect('reserva.medico', 'medico')
-            .leftJoinAndSelect('medico.usuario', 'medicoUsuario')
-            .leftJoinAndSelect('reserva.paciente', 'paciente')
-            .orderBy('reserva.fechaHora', 'ASC');
+      if (where.idPaciente) {
+         qb.andWhere('reserva.idPaciente = :idPaciente', { idPaciente: where.idPaciente });
+      }
 
-        if (where.idPaciente) {
-            qb.andWhere('reserva.idPaciente = :idPaciente', { idPaciente: where.idPaciente });
-        }
+      if (where.idMedico) {
+         qb.andWhere('reserva.idMedico = :idMedico', { idMedico: where.idMedico });
+      }
 
-        if (where.idMedico) {
-            qb.andWhere('reserva.idMedico = :idMedico', { idMedico: where.idMedico });
-        }
+      if(fecha){
+         const desde = new Date(`${fecha}T00:00:00`);
+         const hasta = new Date(`${fecha}T23:59:59.999`);
+         qb.andWhere('reserva.fechaHora BETWEEN :desde AND :hasta', { desde, hasta });
+      }
 
-        if (fecha) {
-            const { desde, hasta } = this.rangoDelDia(fecha);
-            qb.andWhere('reserva.fechaHora BETWEEN :desde AND :hasta', { desde, hasta });
-        }
+      return qb.getMany();
+   }
 
-        return await qb.getMany();
-    }
+   private async buscarPorIdOrFail(id: number): Promise<Reserva> {
 
-    private async buscarPorIdOrFail(id: number): Promise<Reserva> {
+      const reserva = await this.repository.findOne({
+         where: { id },
+         relations: { medico: { usuario: true }, paciente: true },
+      });
 
-        const reserva = await this.repository.findOne({
-            where: { id },
-            relations: { medico: { usuario: true }, paciente: true },
-        });
+      if (!reserva) {
+         throw new NotFoundException('El turno indicado no existe');
+      }
 
-        if (!reserva) {
-            throw new NotFoundException('El turno indicado no existe');
-        }
-
-        return reserva;
-    }
+      return reserva;
+   }
 
     private async buscarPorIdConBloqueo(manager: EntityManager, id: number): Promise<Reserva> {
 
@@ -246,25 +242,25 @@ export class ReservasService {
         return reserva;
     }
 
-    private aDTO(reserva: Reserva): ReservaDTO {
+   private aDTO(reserva: Reserva): ReservaDTO {
 
-        const dto = new ReservaDTO();
-        dto.id = reserva.id;
-        dto.fechaHora = reserva.fechaHora;
-        dto.estado = reserva.estado;
-        dto.valorConsulta = reserva.valorConsulta;
-        dto.medico = {
+      return {
+         id: reserva.id,
+         fechaHora: reserva.fechaHora,
+         estado: reserva.estado,
+         valorConsulta: reserva.valorConsulta,
+         medico: {
             id: reserva.medico.id,
             nombres: reserva.medico.usuario.nombres,
             apellidos: reserva.medico.usuario.apellidos,
-        };
-        dto.paciente = {
+         },
+         paciente: {
             id: reserva.paciente.id,
             nombres: reserva.paciente.nombres,
             apellidos: reserva.paciente.apellidos,
             documento: reserva.paciente.documento,
-        };
-        return dto;
-    }
+         },
+      };
+   }
 
 }

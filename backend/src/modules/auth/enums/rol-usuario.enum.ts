@@ -1,6 +1,6 @@
 
 export enum RolUsuarioEnum {
-    "MEDICO" = "MEDICO",
-    "PACIENTE" = "PACIENTE",
-    "ADMINISTRADOR" = "ADMINISTRADOR"
+    'MEDICO' = 'MEDICO',
+    'PACIENTE' = 'PACIENTE',
+    'ADMINISTRADOR' = 'ADMINISTRADOR'
 }
