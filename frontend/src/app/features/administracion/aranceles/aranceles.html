@@ -60,13 +60,16 @@
                                 <td>
                                     <span class="badge badge-active">Activo</span>
                                 </td>
-                                <td class="table-actions">
-                                    <button type="button" class="btn btn-sm"
-                                        [class.btn-primary]="medicoSeleccionado()?.id === medico.id"
-                                        [class.btn-outline]="medicoSeleccionado()?.id !== medico.id"
-                                        (click)="seleccionarMedico(medico)">
-                                        Editar precio
-                                    </button>
+                                <td>
+                                    <div class="table-actions">
+                                        <button type="button" class="btn btn-sm"
+                                            [class.btn-primary]="medicoSeleccionado()?.id === medico.id"
+                                            [class.btn-outline]="medicoSeleccionado()?.id !== medico.id"
+                                            (click)="seleccionarMedico(medico)">
+                                            Editar precio
+                                        </button>
+
+                                    </div>
                                 </td>
                             </tr>
                             }

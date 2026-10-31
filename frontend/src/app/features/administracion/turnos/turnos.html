@@ -129,46 +129,52 @@
                             @for (reserva of reservasFiltradas(); track reserva.id) {
                             <tr>
                                 <td>#{{ reserva.id }}</td>
-                                <td>
+                                <td style="white-space: nowrap;">
                                     <strong>{{ reserva.fechaHora | date:'dd/MM/yyyy' }}</strong>
                                     <div>{{ reserva.fechaHora | date:'HH:mm' }} hs</div>
                                 </td>
                                 <td>
-                                    <span class="user-avatar" aria-hidden="true">
-                                        {{ obtenerIniciales(reserva.paciente.nombres, reserva.paciente.apellidos) }}
-                                    </span>
-                                    <div>
-                                        <strong>{{ reserva.paciente.nombres }} {{ reserva.paciente.apellidos }}</strong>
-                                        @if (reserva.paciente.documento) {
-                                        <div class="card-subtitle">DNI {{ reserva.paciente.documento }}</div>
-                                        }
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span class="user-avatar" aria-hidden="true">
+                                            {{ obtenerIniciales(reserva.paciente.nombres, reserva.paciente.apellidos) }}
+                                        </span>
+                                        <div>
+                                            <strong>{{ reserva.paciente.nombres }} {{ reserva.paciente.apellidos
+                                                }}</strong>
+                                            @if (reserva.paciente.documento) {
+                                            <div class="card-subtitle" style="white-space: nowrap;">DNI {{
+                                                reserva.paciente.documento }}</div>
+                                            }
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
                                     Dr/a. {{ reserva.medico.nombres }} {{ reserva.medico.apellidos }}
                                 </td>
-                                <td>
+                                <td style="white-space: nowrap; font-weight: 600;">
                                     $ {{ reserva.valorConsulta | number:'1.0-0' }}
                                 </td>
-                                <td>
+                                <td style="white-space: nowrap;">
                                     <span [class]="obtenerClaseBadge(reserva.estado)">
                                         {{ obtenerTextoEstado(reserva.estado) }}
                                     </span>
                                 </td>
-                                <td class="table-actions">
-                                    @if (puedeCancelar(reserva)) {
-                                    <button type="button" class="btn btn-danger btn-sm"
-                                        [disabled]="cancelandoId() === reserva.id"
-                                        (click)="solicitarCancelacion(reserva)">
-                                        {{ cancelandoId() === reserva.id ? 'Cancelando...' : 'Cancelar turno' }}
-                                    </button>
-                                    } @else {
-                                    <button type="button" class="btn btn-outline btn-sm" disabled
-                                        [title]="motivoNoCancelable(reserva)">
-                                        No cancelable
-                                    </button>
-                                    <small class="form-help">{{ motivoNoCancelable(reserva) }}</small>
-                                    }
+                                <td>
+                                    <div class="table-actions">
+                                        @if (puedeCancelar(reserva)) {
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                            [disabled]="cancelandoId() === reserva.id"
+                                            (click)="solicitarCancelacion(reserva)">
+                                            {{ cancelandoId() === reserva.id ? 'Cancelando...' : 'Cancelar turno' }}
+                                        </button>
+                                        } @else {
+                                        <button type="button" class="btn btn-outline btn-sm" disabled
+                                            [title]="motivoNoCancelable(reserva)">
+                                            No cancelable
+                                        </button>
+                                        <small class="form-help">{{ motivoNoCancelable(reserva) }}</small>
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                             }

@@ -1,26 +1,157 @@
-:host { display: block; }
-.eyebrow { color: var(--color-text-secondary); font-size: 12px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
-.page-header h1 { margin-bottom: 10px; }
-.motto { background: var(--color-primary); color: var(--color-on-primary); border-radius: 24px; padding: 24px 32px; font: 500 24px/1.4 var(--font-heading); margin: 0; }
-.agenda-grid { display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(250px, 1fr); gap: 24px; align-items: start; }
-.card-header { margin-bottom: 24px; }
-h2 { font-size: 24px; margin: 0; }
-.fecha-controles { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; }
-.fecha-controles label { display: grid; gap: 6px; font-size: 13px; }
-.fecha-controles input { min-height: 44px; }
-.table-container { border: 0; }
-.table { font-size: 13px; }
-.table th, .table td { padding: 16px 12px; }
-.importe { white-space: nowrap; }
-.finalizado { color: var(--color-text-secondary); }
-.estadisticas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
-.estadistica { padding: 20px; border-radius: 14px; display: grid; gap: 6px; font-size: 13px; }
-.estadistica strong { font: 600 34px var(--font-heading); }
-.total { background: var(--color-info-bg); color: var(--color-info); }
-.atendidos { background: var(--color-success-bg); color: var(--color-success); }
-.ausentes { background: var(--color-error-bg); color: var(--color-error); }
-.pendientes { background: var(--color-warning-bg); color: var(--color-warning); }
-.nota { padding: 16px; background: var(--color-surface-secondary); border-radius: 12px; margin: 20px 0 0; font-size: 13px; }
-.confirmacion { margin-bottom: 20px; }
-@media (max-width: 1150px) { .agenda-grid { grid-template-columns: minmax(0, 1fr); } .estadisticas { grid-template-columns: repeat(4, minmax(0, 1fr)); } .motto { display: none; } }
-@media (max-width: 600px) { .estadisticas { grid-template-columns: repeat(2, minmax(0, 1fr)); } .agenda-turnos { padding: 16px; } .table { min-width: 720px; } }
+:host {
+    display: block;
+}
+
+.eyebrow {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.page-header h1 {
+    margin-bottom: 10px;
+}
+
+.motto {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-radius: 24px;
+    padding: 24px 32px;
+    font: 500 24px/1.4 'Playfair Display', Georgia, serif;
+    margin: 0;
+}
+
+.agenda-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2.5fr) minmax(250px, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.card-header {
+    margin-bottom: 24px;
+}
+
+h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.fecha-controles {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.fecha-controles label {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.fecha-controles input {
+    min-height: 44px;
+}
+
+.table-container {
+    border: 0;
+}
+
+.table {
+    font-size: 13px;
+}
+
+.table th,
+.table td {
+    padding: 16px 12px;
+}
+
+.importe {
+    white-space: nowrap;
+}
+
+.finalizado {
+    color: var(--color-text-secondary);
+}
+
+.estadisticas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.estadistica {
+    padding: 20px;
+    border-radius: 14px;
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.estadistica strong {
+    font: 600 34px 'Playfair Display', Georgia, serif;
+}
+
+.total {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+}
+
+.atendidos {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.ausentes {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.pendientes {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.nota {
+    padding: 16px;
+    background: var(--color-surface-secondary);
+    border-radius: 12px;
+    margin: 20px 0 0;
+    font-size: 13px;
+}
+
+.confirmacion {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 1150px) {
+    .agenda-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .estadisticas {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .motto {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .estadisticas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .agenda-turnos {
+        padding: 16px;
+    }
+
+    .table {
+        min-width: 720px;
+    }
+}

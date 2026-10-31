@@ -1,0 +1,9 @@
+.table td>.user-avatar {
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.table td>.user-avatar+div {
+    display: inline-block;
+    vertical-align: middle;
+}
