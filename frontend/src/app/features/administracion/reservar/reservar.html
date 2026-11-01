@@ -14,19 +14,6 @@
         </div>
     </header>
 
-    @if (mensajeExito()) {
-    <div class="alert alert-success" role="status">
-        <p>{{ mensajeExito() }}</p>
-        <button type="button" class="btn btn-sm btn-outline" (click)="irAListadoTurnos()">
-            Ir al listado de turnos
-        </button>
-    </div>
-    }
-
-    @if (mensajeError()) {
-    <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
-    }
-
     <div class="content-grid">
         <section class="card" aria-labelledby="titulo-form-reserva">
             <div class="card-header">
@@ -145,6 +132,20 @@
                 </form>
                 }
             </div>
+
+            @if (mensajeExito()) {
+            <div class="alert alert-success" role="status">
+                <p>{{ mensajeExito() }}</p>
+                <button type="button" class="btn btn-sm btn-outline" (click)="irAListadoTurnos()">
+                    Ir al listado de turnos
+                </button>
+            </div>
+            }
+
+            @if (mensajeError()) {
+            <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+            }
+
         </section>
 
         <aside aria-label="Resumen de la reserva a crear">

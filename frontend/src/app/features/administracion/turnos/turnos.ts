@@ -13,6 +13,7 @@ type FiltroPestana = 'TODOS' | EstadoReserva;
   selector: 'app-turnos-admin',
   imports: [DatePipe, DecimalPipe, RouterLink],
   templateUrl: './turnos.html',
+  styleUrl: './turnos.css',
 })
 export class TurnosComponent implements OnInit {
   private readonly reservasService = inject(ReservasService);

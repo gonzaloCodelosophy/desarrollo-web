@@ -1,191 +1,287 @@
 .patient-turnos {
-  max-width: 1100px;
-  margin: 0 auto;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-.patient-turnos > h1 {
-  margin-bottom: 8px;
+.patient-turnos>h1 {
+    margin-bottom: 6px;
 }
 
-.patient-turnos > p {
-  margin-top: 0;
+.patient-turnos>p {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
 }
 
+/* Pestañas de filtro */
 .turnos-filtros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 24px 0 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .turnos-filtros button {
-  min-height: 38px;
-  padding: 6px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.turnos-filtros button:hover {
+    background-color: var(--color-surface-secondary);
+    color: var(--color-text);
 }
 
 .turnos-filtros button.seleccionado {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    border-color: var(--color-primary);
 }
 
+/* Listado y tarjetas de turnos */
 .lista-turnos {
-  display: grid;
-  gap: 10px;
+    display: grid;
+    gap: 12px;
 }
 
 .turno-item {
-  display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr) auto auto;
-  align-items: center;
-  gap: 16px;
-  padding: 18px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
+    display: grid;
+    grid-template-columns: minmax(180px, 1.1fr) minmax(160px, 1fr) auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--color-surface);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
-.turno-fecha,
-.turno-valor {
-  display: grid;
-  gap: 4px;
+.turno-fecha {
+    display: grid;
+    justify-self: start;
+    gap: 4px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background-color: var(--color-info-bg);
+    color: var(--color-info);
+    white-space: nowrap;
+}
+
+.turno-fecha strong {
+    font-size: 15px;
+}
+
+.turno-fecha span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.turno-datos {
+    display: grid;
+    gap: 4px;
 }
 
 .turno-datos h2,
 .turno-datos p {
-  margin: 0;
+    margin: 0;
 }
 
 .turno-datos h2 {
-  font-size: 1rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 19px;
+}
+
+.turno-datos p {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .turno-valor {
-  text-align: right;
+    display: grid;
+    gap: 4px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.turno-valor strong {
+    font-size: 17px;
 }
 
 .turno-valor span,
 .aviso-plazo {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-size: 13px;
 }
 
+.aviso-plazo {
+    max-width: 170px;
+    text-align: right;
+}
+
+/* Botones de cancelar */
 .boton-cancelar {
-  padding: 8px 12px;
-  border: 1px solid var(--color-error);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-error);
-  cursor: pointer;
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--color-error);
+    border-radius: 10px;
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .boton-cancelar:disabled {
-  cursor: default;
-  opacity: 0.6;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
+/* Estados vacíos y cuadro de información */
 .estado-listado,
 .info-turnos {
-  margin-top: 18px;
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--color-surface);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.estado-listado {
+    text-align: center;
+    padding: 32px 20px;
 }
 
 .estado-listado h2,
 .info-turnos h2 {
-  margin: 0 0 8px;
-  font-size: 1.1rem;
+    margin: 0 0 8px;
+    font-size: 20px;
 }
 
 .estado-listado p,
 .info-turnos p {
-  margin: 0 0 8px;
+    margin: 0 0 8px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
 }
 
+/* Enlaces con aspecto de botón principal */
+.estado-listado a,
+.info-turnos a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    margin-top: 10px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+/* Avisos de éxito y error */
 .notice {
-  margin: 12px 0;
-  padding: 10px;
-  border: 1px solid currentColor;
-  border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 14px 16px;
+    border: 1px solid currentColor;
+    border-radius: 12px;
+    font-size: 13px;
 }
 
 .notice-success {
-  color: var(--color-success);
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
 }
 
 .notice-error {
-  color: var(--color-error);
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
 }
 
+/* Modal de confirmación */
 .fondo-confirmacion {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  background: var(--color-overlay);
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background-color: var(--color-overlay);
 }
 
 .confirmacion {
-  width: min(100%, 460px);
-  padding: 18px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  color: var(--color-text);
+    width: min(100%, 460px);
+    padding: 22px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--color-surface);
+    color: var(--color-text);
 }
 
 .confirmacion h2 {
-  margin: 0 0 12px;
-  font-size: 1.2rem;
+    margin: 0 0 12px;
+    font-size: 20px;
 }
 
 .acciones-confirmacion {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
 }
 
-.acciones-confirmacion button {
-  min-height: 38px;
-  padding: 6px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
+.acciones-confirmacion button:not(.boton-cancelar) {
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background-color: transparent;
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
 }
 
+/* Adaptación a pantallas chicas */
 @media (max-width: 760px) {
-  .turno-item {
-    grid-template-columns: 1fr 1fr;
-  }
+    .turno-item {
+        grid-template-columns: 1fr 1fr;
+    }
 
-  .turno-valor {
-    text-align: left;
-  }
+    .turno-valor,
+    .aviso-plazo {
+        text-align: left;
+        max-width: none;
+    }
 }
 
 @media (max-width: 480px) {
-  .turno-item {
-    grid-template-columns: 1fr;
-  }
+    .turno-item {
+        grid-template-columns: 1fr;
+    }
 
-  .turno-valor {
-    text-align: left;
-  }
-
-  .acciones-confirmacion {
-    flex-direction: column;
-  }
+    .acciones-confirmacion {
+        flex-direction: column;
+    }
 }
