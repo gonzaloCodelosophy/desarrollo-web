@@ -60,6 +60,34 @@ export class ReservasService {
       return { id: reserva.id };
    }
 
+    async horariosOcupados(fecha: string, idMedico: number): Promise<string[]> {
+        if (!Number.isSafeInteger(idMedico) || idMedico <= 0) {
+            throw new BadRequestException("El médico indicado no es válido");
+        }
+
+        await this.medicosService.buscarPorIdOrFail(idMedico);
+
+        const inicio = new Date(`${fecha}T00:00:00-03:00`);
+        const fin = new Date(inicio.getTime() + 24 * 60 * 60 * 1000);
+
+        const turnos = await this.repository.createQueryBuilder("reserva")
+            .select(["reserva.id", "reserva.fechaHora"])
+            .where("reserva.idMedico = :idMedico", { idMedico })
+            .andWhere("reserva.fechaHora >= :inicio AND reserva.fechaHora < :fin", { inicio, fin })
+            .andWhere("reserva.estado != :cancelado", { cancelado: EstadoReservaEnum.CANCELADO })
+            .orderBy("reserva.fechaHora", "ASC")
+            .getMany();
+
+        const fmt = new Intl.DateTimeFormat("es-AR", {
+            timeZone: "America/Argentina/Buenos_Aires",
+            hour: "2-digit",
+            minute: "2-digit",
+            hourCycle: "h23",
+        });
+
+        return [...new Set(turnos.map((t) => fmt.format(t.fechaHora)))];
+    }
+
    async listarReservas(query: ListReservasQueryDto, currentUser: JwtPayload): Promise<ReservaDTO[]> {
 
       const where: Record<string, unknown> = {};

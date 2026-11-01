@@ -57,3 +57,12 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Reserva de turnos del paciente
+
+La ruta `/paciente/reservar` carga `src/app/shared/reserva-turno/`.
+Sus estilos usan clases en español y las variables de tema globales.
+La disponibilidad se consulta sin datos de otros pacientes y se verifica nuevamente al confirmar.
+
+La reserva administrativa (`/administracion/reservar`) conserva su formulario original
+independiente, en `src/app/features/administracion/reservar/`.

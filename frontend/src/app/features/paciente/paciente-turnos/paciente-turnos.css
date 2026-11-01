@@ -1,208 +1,287 @@
-.appointments-page {
-    max-width: 1400px;
-    margin: auto;
+.patient-turnos {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-.appointments-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
-    align-items: start;
-    gap: 24px;
+.patient-turnos>h1 {
+    margin-bottom: 6px;
 }
 
-.appointments-heading {
-    padding: 16px;
-    border-radius: 16px;
-    background: var(--color-surface-secondary);
-}
-
-.appointments-heading .page-title {
-    margin-bottom: 4px;
-}
-
-.eyebrow {
-    margin: 0 0 8px;
+.patient-turnos>p {
+    margin-top: 0;
+    margin-bottom: 20px;
     color: var(--color-text-secondary);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    font-size: 14px;
 }
 
-.appointment-tabs {
-    width: fit-content;
-    max-width: 100%;
-    margin: 20px 0;
-    padding: 4px;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    background: var(--color-surface);
+/* Pestañas de filtro */
+.turnos-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-border);
 }
 
-.appointment-tabs button {
+.turnos-filtros button {
     min-height: 40px;
-    padding: 8px 12px;
-    background: transparent;
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background-color: var(--color-surface);
     color: var(--color-text-secondary);
-    border: 0;
-    white-space: nowrap;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
 }
 
-.appointment-tabs button.nav-tab-active {
-    background: var(--color-primary);
+.turnos-filtros button:hover {
+    background-color: var(--color-surface-secondary);
+    color: var(--color-text);
+}
+
+.turnos-filtros button.seleccionado {
+    background-color: var(--color-primary);
     color: var(--color-on-primary);
+    border-color: var(--color-primary);
 }
 
-.tab-count {
-    display: inline-grid;
-    place-items: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: var(--color-muted-bg);
-    font-size: 12px;
-}
-
-.appointment-tabs button.nav-tab-active .tab-count {
-    background: var(--color-on-primary);
-    color: var(--color-primary);
-}
-
-.appointment-list,
-.appointments-aside {
+/* Listado y tarjetas de turnos */
+.lista-turnos {
     display: grid;
     gap: 12px;
 }
 
-.appointment-card {
+.turno-item {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr) minmax(140px, auto);
+    grid-template-columns: minmax(180px, 1.1fr) minmax(160px, 1fr) auto auto;
     align-items: center;
     gap: 16px;
-    padding: 16px;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--color-surface);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
-.appointment-date {
+.turno-fecha {
     display: grid;
-    justify-items: center;
-    align-content: center;
-    min-height: 96px;
-    padding: 8px;
+    justify-self: start;
+    gap: 4px;
+    padding: 10px 16px;
     border-radius: 12px;
-    background: var(--color-info-bg);
-    line-height: 1.2;
+    background-color: var(--color-info-bg);
+    color: var(--color-info);
+    white-space: nowrap;
 }
 
-.appointment-weekday,
-.appointment-month,
-.appointment-price span,
-.cancel-note {
+.turno-fecha strong {
+    font-size: 15px;
+}
+
+.turno-fecha span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.turno-datos {
+    display: grid;
+    gap: 4px;
+}
+
+.turno-datos h2,
+.turno-datos p {
+    margin: 0;
+}
+
+.turno-datos h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 19px;
+}
+
+.turno-datos p {
     color: var(--color-text-secondary);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
 }
 
-.appointment-date strong {
-    font-size: 30px;
-}
-
-.appointment-details h2 {
-    margin: 0 0 4px;
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 20px;
-}
-
-.appointment-actions,
-.appointment-price {
+.turno-valor {
     display: grid;
-    justify-items: end;
-    gap: 8px;
+    gap: 4px;
+    text-align: right;
+    white-space: nowrap;
 }
 
-.appointment-price strong {
-    font-size: 16px;
+.turno-valor strong {
+    font-size: 17px;
 }
 
-.cancel-note {
-    max-width: 180px;
-    margin: 0;
+.turno-valor span,
+.aviso-plazo {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+.aviso-plazo {
+    max-width: 170px;
     text-align: right;
 }
 
-.info-card {
-    padding: 18px;
+/* Botones de cancelar */
+.boton-cancelar {
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--color-error);
+    border-radius: 10px;
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.info-card h2,
-.booking-card h2 {
-    margin: 8px 0 12px;
+.boton-cancelar:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Estados vacíos y cuadro de información */
+.estado-listado,
+.info-turnos {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--color-surface);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.estado-listado {
+    text-align: center;
+    padding: 32px 20px;
+}
+
+.estado-listado h2,
+.info-turnos h2 {
+    margin: 0 0 8px;
     font-size: 20px;
 }
 
-.info-card ul {
-    display: grid;
-    gap: 10px;
-    margin: 0;
-    padding-left: 18px;
+.estado-listado p,
+.info-turnos p {
+    margin: 0 0 8px;
     color: var(--color-text-secondary);
+    font-size: 14px;
 }
 
-.info-card strong {
+/* Enlaces con aspecto de botón principal */
+.estado-listado a,
+.info-turnos a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    margin-top: 10px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+/* Avisos de éxito y error */
+.notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 14px 16px;
+    border: 1px solid currentColor;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.notice-success {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.notice-error {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+/* Modal de confirmación */
+.fondo-confirmacion {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background-color: var(--color-overlay);
+}
+
+.confirmacion {
+    width: min(100%, 460px);
+    padding: 22px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--color-surface);
     color: var(--color-text);
 }
 
-.booking-card {
-    background: var(--color-pale-pink);
-    color: var(--color-navy);
-}
-
-.booking-card p {
-    color: var(--color-navy);
-}
-
-.booking-card .btn {
-    width: 100%;
-    justify-content: space-between;
-}
-
-.appointment-empty {
-    margin-top: 16px;
-}
-
-.appointment-empty h2 {
-    margin: 0;
+.confirmacion h2 {
+    margin: 0 0 12px;
     font-size: 20px;
 }
 
-.empty-icon {
-    display: inline-grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--color-info-bg);
-    color: var(--color-info);
-    font-size: 28px;
+.acciones-confirmacion {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
 }
 
-.cancel-dialog {
-    margin: auto;
+.acciones-confirmacion button:not(.boton-cancelar) {
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background-color: transparent;
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
 }
 
-@media (max-width: 1020px) {
-    .appointments-grid {
+/* Adaptación a pantallas chicas */
+@media (max-width: 760px) {
+    .turno-item {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .turno-valor,
+    .aviso-plazo {
+        text-align: left;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .turno-item {
         grid-template-columns: 1fr;
     }
-}
 
-@media (max-width: 640px) {
-    .appointment-card {
-        grid-template-columns: 64px minmax(0, 1fr);
-        gap: 12px;
-    }
-
-    .appointment-actions {
-        grid-column: 1 / -1;
-        justify-items: start;
+    .acciones-confirmacion {
+        flex-direction: column;
     }
 }

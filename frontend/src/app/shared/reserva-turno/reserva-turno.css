@@ -1,0 +1,39 @@
+:host { display: block; }
+.reserva { max-width: 1500px; margin: auto; }
+.reserva-encabezado { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.reserva-antetitulo { color: var(--color-text-secondary); font-size: 12px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+.reserva-encabezado h1 { margin-bottom: 10px; }
+.reserva-descripcion, .reserva-ayuda { color: var(--color-text-secondary); }
+.reserva-lema { padding: 26px 32px; background: var(--color-primary); color: var(--color-on-primary); border-radius: 24px; font: 500 24px/1.4 var(--font-heading); margin: 0; }
+.reserva-columnas { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.reserva-campos { border: 0; padding: 0; margin: 0; min-width: 0; }
+.reserva-campos, .reserva-columna { display: grid; gap: 24px; }
+.reserva-tarjeta { border: 1px solid var(--color-border); background: var(--color-surface); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-card); min-width: 0; }
+.reserva-tarjeta h2 { font-size: 24px; margin: 0 0 20px; }
+.reserva-campo { display: grid; gap: 8px; margin-bottom: 16px; font-size: 14px; }
+.reserva-profesionales { display: grid; gap: 12px; }
+.reserva-profesional { display: flex; align-items: center; justify-content: flex-start; width: 100%; text-align: left; gap: 14px; padding: 18px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); border-radius: 12px; font-weight: 400; }
+.reserva-profesional small { display: block; color: var(--color-text-secondary); font-size: 12px; margin-top: 4px; }
+.reserva-profesional .reserva-precio { margin-left: auto; white-space: nowrap; }
+.reserva-profesional-elegido, .reserva-horario-elegido { outline: 2px solid var(--color-focus); outline-offset: -2px; background: var(--color-surface-secondary); }
+.reserva-iniciales { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--color-info-bg); color: var(--color-info); font-weight: 700; }
+.reserva-precio { font-weight: 700; }
+.reserva-horarios { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.reserva-horario { display: grid; padding: 12px 6px; background: var(--color-surface-secondary); color: var(--color-text); border: 1px solid var(--color-border); border-radius: 10px; }
+.reserva-horario small { font-size: 11px; }
+.reserva-nota { padding: 16px; margin: 18px 0 0; font-size: 13px; border-radius: 12px; background: var(--color-info-bg); color: var(--color-info); }
+.reserva-nota-destacada { background: var(--color-surface-secondary); color: var(--color-text); }
+.reserva-resumen { margin: 0; display: grid; gap: 12px; }
+.reserva-resumen div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+.reserva-resumen dt { color: var(--color-text-secondary); }
+.reserva-resumen dd { margin: 0; font-weight: 600; }
+.reserva-boton { display: inline-flex; justify-content: center; padding: 12px 18px; border-radius: 10px; background: var(--color-primary); color: var(--color-on-primary); font-weight: 700; text-decoration: none; }
+.reserva-boton-secundario { background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
+.reserva-confirmar { width: 100%; margin-top: 20px; }
+.reserva-volver { display: block; text-align: center; margin-top: 16px; font-size: 14px; }
+.reserva-aviso { padding: 18px; border: 1px solid currentColor; border-radius: 12px; margin-bottom: 20px; }
+.reserva-aviso-exito { background: var(--color-success-bg); color: var(--color-success); }
+.reserva-aviso-error { background: var(--color-error-bg); color: var(--color-error); }
+.reserva-solo-lectores { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 1000px) { .reserva-columnas { grid-template-columns: minmax(0, 1fr); } .reserva-lema { display: none; } }
+@media (max-width: 600px) { .reserva-tarjeta { padding: 18px; } .reserva-profesional { flex-wrap: wrap; } .reserva-horarios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

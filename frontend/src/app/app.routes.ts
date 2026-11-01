@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
-import { PlaceholderComponent } from './shared/placeholder.component';
 
 export const routes: Routes = [
   {
@@ -26,7 +25,8 @@ export const routes: Routes = [
         path: 'paciente/reservar',
         canActivate: [roleGuard],
         data: { roles: ['PACIENTE'], title: 'Reservar Turno' },
-        component: PlaceholderComponent,
+        loadComponent: () =>
+          import('./shared/reserva-turno/reserva-turno').then((m) => m.ReservaTurnoComponent),
       },
 
       {
