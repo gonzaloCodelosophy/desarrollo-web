@@ -196,10 +196,10 @@
   min-width: 44px;
   margin: 0;
   padding: 10px;
-  border: 1px solid var(--login-border);
+  border: 1px solid transparent;
   border-radius: 50%;
-  color: var(--login-text);
-  background: var(--login-toggle);
+  color: #263c56;
+  background: transparent;
   cursor: pointer;
   transition:
     background-color var(--login-transition),
@@ -212,8 +212,8 @@
 }
 
 .login-page .login-theme-button:hover {
-  background: var(--login-toggle);
-  color: var(--login-text);
+  background: rgb(0 0 0 / 6%);
+  color: #263c56;
 }
 
 .login-page .login-card {
