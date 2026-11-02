@@ -1,18 +1,26 @@
-<main>
-  <h1>Sin permisos</h1>
-  <p>No tenés acceso a esta sección, por favor reintenta nuevamente.</p>
-  @switch (authService.userRole()) {
-  @case ('PACIENTE') {
-  <a routerLink="/paciente/turnos">Ir a Mis turnos</a>
-  }
-  @case ('MEDICO') {
-  <a routerLink="/medico/agenda">Ir a la Agenda</a>
-  }
-  @case ('ADMINISTRADOR') {
-  <a routerLink="/administracion/turnos">Ir a Turnos</a>
-  }
-  @default {
-  <a routerLink="/login">Ir al inicio de sesión</a>
-  }
-  }
-</main>
+<section class="status-page">
+  <div class="card status-card">
+    <div class="status-logos">
+      <img class="status-logo status-logo-light" src="/assets/logo/logo-colores.png"
+        alt="Clínica San Martín" decoding="async" />
+      <img class="status-logo status-logo-dark" src="/assets/logo/logo-colores-dark.png" alt="" aria-hidden="true"
+        decoding="async" />
+    </div>
+    <h1>Sin permisos</h1>
+    <p>No tenés acceso a esta sección, por favor reintenta nuevamente.</p>
+    @switch (authService.userRole()) {
+      @case ('PACIENTE') {
+        <a routerLink="/paciente/turnos" class="btn btn-primary">Ir a Mis turnos</a>
+      }
+      @case ('MEDICO') {
+        <a routerLink="/medico/agenda" class="btn btn-primary">Ir a la Agenda</a>
+      }
+      @case ('ADMINISTRADOR') {
+        <a routerLink="/administracion/turnos" class="btn btn-primary">Ir a Turnos</a>
+      }
+      @default {
+        <a routerLink="/login" class="btn btn-primary">Ir al inicio de sesión</a>
+      }
+    }
+  </div>
+</section>
