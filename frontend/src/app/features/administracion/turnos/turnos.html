@@ -13,11 +13,15 @@
     </header>
 
     @if (mensajeExito()) {
-    <p class="alert alert-success" role="status">{{ mensajeExito() }}</p>
+    <p-message severity="success" role="status" [style]="{ display: 'block', 'margin-bottom': '16px' }">
+        {{ mensajeExito() }}
+    </p-message>
     }
 
     @if (mensajeError()) {
-    <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+    <p-message severity="error" role="alert" [style]="{ display: 'block', 'margin-bottom': '16px' }">
+        {{ mensajeError() }}
+    </p-message>
     }
 
     <div class="content-grid">
@@ -59,7 +63,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="filtro-fecha" class="form-label">Fecha</label>
-                        <input id="filtro-fecha" type="date" class="form-control" [value]="filtroFecha()"
+                        <input id="filtro-fecha" pInputText type="date" class="form-control" [value]="filtroFecha()"
                             (change)="onFechaChange($event)" />
                     </div>
 
@@ -90,31 +94,22 @@
 
                     <div class="form-group">
                         <label for="buscar-turno" class="form-label">Buscar</label>
-                        <input id="buscar-turno" type="search" class="form-control"
+                        <input id="buscar-turno" pInputText type="search" class="form-control"
                             placeholder="Paciente, médico o # turno..." [value]="busqueda()"
                             (input)="onBusquedaChange($event)" />
                     </div>
                 </div>
 
                 <div class="page-actions">
-                    <button type="button" class="btn btn-ghost btn-sm" (click)="limpiarFiltros()">
-                        Limpiar filtros
-                    </button>
-                    <button type="button" class="btn btn-outline btn-sm" [disabled]="cargando()"
-                        (click)="cargarReservas()">
-                        Actualizar listado
-                    </button>
+                    <p-button type="button" size="small" [text]="true" severity="secondary" label="Limpiar filtros"
+                        (onClick)="limpiarFiltros()" />
+                    <p-button type="button" size="small" [outlined]="true" severity="secondary" [disabled]="cargando()"
+                        [loading]="cargando()" label="Actualizar listado" (onClick)="cargarReservas()" />
                 </div>
 
-                @if (cargando()) {
-                <p class="loading-state" role="status">Cargando turnos…</p>
-                } @else if (reservasFiltradas().length === 0) {
-                <p class="empty-state">No se encontraron turnos con los filtros seleccionados.</p>
-                } @else {
-                <div class="table-container" tabindex="0" role="region" aria-label="Turnos reservados">
-                    <table class="table">
-                        <caption class="sr-only">Listado administrativo de turnos médicos</caption>
-                        <thead>
+                <div class="table-container" tabindex="0" role="region" aria-label="Turnos reservados" style="margin-top: 16px;">
+                    <p-table [value]="reservasFiltradas()" [loading]="cargando()" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Fecha y Horario</th>
@@ -124,9 +119,8 @@
                                 <th scope="col">Estado</th>
                                 <th scope="col">Acciones</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @for (reserva of reservasFiltradas(); track reserva.id) {
+                        </ng-template>
+                        <ng-template pTemplate="body" let-reserva>
                             <tr>
                                 <td>#{{ reserva.id }}</td>
                                 <td style="white-space: nowrap;">
@@ -139,11 +133,9 @@
                                             {{ obtenerIniciales(reserva.paciente.nombres, reserva.paciente.apellidos) }}
                                         </span>
                                         <div>
-                                            <strong>{{ reserva.paciente.nombres }} {{ reserva.paciente.apellidos
-                                                }}</strong>
+                                            <strong>{{ reserva.paciente.nombres }} {{ reserva.paciente.apellidos }}</strong>
                                             @if (reserva.paciente.documento) {
-                                            <div class="card-subtitle" style="white-space: nowrap;">DNI {{
-                                                reserva.paciente.documento }}</div>
+                                            <div class="card-subtitle" style="white-space: nowrap;">DNI {{ reserva.paciente.documento }}</div>
                                             }
                                         </div>
                                     </div>
@@ -155,33 +147,35 @@
                                     $ {{ reserva.valorConsulta | number:'1.0-0' }}
                                 </td>
                                 <td style="white-space: nowrap;">
-                                    <span [class]="obtenerClaseBadge(reserva.estado)">
-                                        {{ obtenerTextoEstado(reserva.estado) }}
-                                    </span>
+                                    <p-tag [severity]="obtenerSeverityTag(reserva.estado)" [value]="obtenerTextoEstado(reserva.estado)" />
                                 </td>
                                 <td>
                                     <div class="table-actions">
                                         @if (puedeCancelar(reserva)) {
-                                        <button type="button" class="btn btn-danger btn-sm"
+                                        <p-button type="button" size="small" severity="danger"
                                             [disabled]="cancelandoId() === reserva.id"
-                                            (click)="solicitarCancelacion(reserva)">
-                                            {{ cancelandoId() === reserva.id ? 'Cancelando...' : 'Cancelar turno' }}
-                                        </button>
+                                            [loading]="cancelandoId() === reserva.id"
+                                            (onClick)="solicitarCancelacion(reserva)"
+                                            [label]="cancelandoId() === reserva.id ? 'Cancelando...' : 'Cancelar turno'" />
                                         } @else {
-                                        <button type="button" class="btn btn-outline btn-sm" disabled
-                                            [title]="motivoNoCancelable(reserva)">
-                                            No cancelable
-                                        </button>
+                                        <p-button type="button" size="small" [outlined]="true" severity="secondary"
+                                            [disabled]="true" [title]="motivoNoCancelable(reserva)"
+                                            label="No cancelable" />
                                         <small class="form-help">{{ motivoNoCancelable(reserva) }}</small>
                                         }
                                     </div>
                                 </td>
                             </tr>
-                            }
-                        </tbody>
-                    </table>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="7" class="table-empty">
+                                    No se encontraron turnos con los filtros seleccionados.
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
                 </div>
-                }
             </div>
         </section>
 
@@ -223,37 +217,28 @@
     </div>
 
     @if (reservaACancelar(); as seleccionada) {
-    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-cancelar">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 id="titulo-modal-cancelar" class="card-title">Confirmar cancelación de turno</h2>
-            </div>
-            <div class="modal-body">
-                <p>
-                    ¿Estás seguro de que querés cancelar el turno <strong>#{{ seleccionada.id }}</strong>?
-                </p>
-                <ul>
-                    <li><strong>Paciente:</strong> {{ seleccionada.paciente.nombres }} {{
-                        seleccionada.paciente.apellidos }}</li>
-                    <li><strong>Médico:</strong> Dr/a. {{ seleccionada.medico.nombres }} {{
-                        seleccionada.medico.apellidos }}</li>
-                    <li><strong>Fecha y hora:</strong> {{ seleccionada.fechaHora | date:'dd/MM/yyyy HH:mm' }} hs</li>
-                </ul>
-                <p class="form-help">
-                    Al cancelar la reserva, este horario volverá a quedar disponible para nuevas reservas.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" [disabled]="cancelandoId() !== null"
-                    (click)="cerrarModalCancelacion()">
-                    Volver
-                </button>
-                <button type="button" class="btn btn-danger" [disabled]="cancelandoId() !== null"
-                    (click)="confirmarCancelacion()">
-                    {{ cancelandoId() !== null ? 'Cancelando...' : 'Sí, cancelar turno' }}
-                </button>
-            </div>
-        </div>
-    </div>
+    <p-dialog [visible]="true" [modal]="true" [closable]="cancelandoId() === null"
+        (onHide)="cerrarModalCancelacion()" header="Confirmar cancelación de turno"
+        [style]="{ width: 'min(100%, 520px)' }">
+        <p>
+            ¿Estás seguro de que querés cancelar el turno <strong>#{{ seleccionada.id }}</strong>?
+        </p>
+        <ul style="margin: 12px 0; padding-left: 20px;">
+            <li><strong>Paciente:</strong> {{ seleccionada.paciente.nombres }} {{ seleccionada.paciente.apellidos }}</li>
+            <li><strong>Médico:</strong> Dr/a. {{ seleccionada.medico.nombres }} {{ seleccionada.medico.apellidos }}</li>
+            <li><strong>Fecha y hora:</strong> {{ seleccionada.fechaHora | date:'dd/MM/yyyy HH:mm' }} hs</li>
+        </ul>
+        <p class="form-help">
+            Al cancelar la reserva, este horario volverá a quedar disponible para nuevas reservas.
+        </p>
+
+        <ng-template pTemplate="footer">
+            <p-button type="button" [outlined]="true" severity="secondary" [disabled]="cancelandoId() !== null"
+                (onClick)="cerrarModalCancelacion()" label="Volver" />
+            <p-button type="button" severity="danger" [disabled]="cancelandoId() !== null"
+                [loading]="cancelandoId() !== null" (onClick)="confirmarCancelacion()"
+                [label]="cancelandoId() !== null ? 'Cancelando...' : 'Sí, cancelar turno'" />
+        </ng-template>
+    </p-dialog>
     }
 </div>

@@ -4,6 +4,11 @@ import localeEsAr from '@angular/common/locales/es-AR';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subscription } from 'rxjs';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
+import { MessageModule } from 'primeng/message';
 import { ReservasService } from 'src/app/core/services/reservas.service';
 import type { EstadoReserva, Reserva } from 'src/app/core/models/reserva.model';
 
@@ -11,7 +16,15 @@ registerLocaleData(localeEsAr);
 
 @Component({
   selector: 'app-agenda',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [
+    CurrencyPipe,
+    DatePipe,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    TagModule,
+    MessageModule,
+  ],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -117,5 +130,18 @@ export class AgendaComponent {
 
   claseEstado(estado: EstadoReserva): string {
     return { ACTIVO: 'badge-pending', ATENDIDO: 'badge-attended', AUSENTE: 'badge-absent', CANCELADO: 'badge-cancelled' }[estado];
+  }
+
+  obtenerSeverityTag(estado: EstadoReserva): 'info' | 'success' | 'danger' | 'secondary' {
+    switch (estado) {
+      case 'ACTIVO':
+        return 'info';
+      case 'ATENDIDO':
+        return 'success';
+      case 'AUSENTE':
+        return 'danger';
+      case 'CANCELADO':
+        return 'secondary';
+    }
   }
 }

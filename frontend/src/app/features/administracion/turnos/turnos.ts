@@ -2,6 +2,12 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
+import { MessageModule } from 'primeng/message';
+import { DialogModule } from 'primeng/dialog';
 import { ReservasService } from '../../../core/services/reservas.service';
 import { MedicosService } from '../../../core/services/medicos.service';
 import type { EstadoReserva, Reserva } from '../../../core/models/reserva.model';
@@ -11,7 +17,17 @@ type FiltroPestana = 'TODOS' | EstadoReserva;
 
 @Component({
   selector: 'app-turnos-admin',
-  imports: [DatePipe, DecimalPipe, RouterLink],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    RouterLink,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    TagModule,
+    MessageModule,
+    DialogModule,
+  ],
   templateUrl: './turnos.html',
   styleUrl: './turnos.css',
 })
@@ -226,6 +242,19 @@ export class TurnosComponent implements OnInit {
         return 'badge badge-absent';
       case 'CANCELADO':
         return 'badge badge-cancelled';
+    }
+  }
+
+  obtenerSeverityTag(estado: EstadoReserva): 'info' | 'success' | 'danger' | 'secondary' {
+    switch (estado) {
+      case 'ACTIVO':
+        return 'info';
+      case 'ATENDIDO':
+        return 'success';
+      case 'AUSENTE':
+        return 'danger';
+      case 'CANCELADO':
+        return 'secondary';
     }
   }
 

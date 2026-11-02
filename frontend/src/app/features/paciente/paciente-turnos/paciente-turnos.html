@@ -3,14 +3,18 @@
   <p>Acá podés consultar tus turnos y cancelar los que todavía estén dentro del plazo.</p>
 
   @if (mensajeExito()) {
-    <p class="notice notice-success" role="status">{{ mensajeExito() }}</p>
+    <p-message severity="success" role="status" [style]="{ display: 'block', 'margin': '16px 0' }">
+      {{ mensajeExito() }}
+    </p-message>
   }
 
   @if (errorCarga()) {
-    <div class="notice notice-error" role="alert">
-      <span>{{ errorCarga() }}</span>
-      <button type="button" (click)="cargarTurnos()">Reintentar</button>
-    </div>
+    <p-message severity="error" role="alert" [style]="{ display: 'block', 'margin': '16px 0' }">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; flex-wrap: wrap;">
+        <span>{{ errorCarga() }}</span>
+        <p-button [outlined]="true" size="small" (onClick)="cargarTurnos()" label="Reintentar" />
+      </div>
+    </p-message>
   }
 
   <section class="turnos-filtros" aria-label="Filtrar turnos">
@@ -59,9 +63,8 @@
             <strong>$ {{ precio(turno.valorConsulta) }}</strong>
           </div>
           @if (puedeCancelar(turno)) {
-            <button type="button" class="boton-cancelar" (click)="solicitarCancelacion(turno)">
-              Cancelar turno
-            </button>
+            <p-button type="button" size="small" severity="danger" (onClick)="solicitarCancelacion(turno)"
+              label="Cancelar turno" />
           } @else if (turno.estado === 'ACTIVO' && filtro() === 'proximos') {
             <span class="aviso-plazo">Se puede cancelar hasta el día anterior.</span>
           }
@@ -79,25 +82,24 @@
 </main>
 
 @if (turnoAConfirmar(); as turno) {
-  <div class="fondo-confirmacion" (click)="cerrarConfirmacion()">
-    <section class="confirmacion" role="alertdialog" aria-modal="true"
-      aria-labelledby="titulo-confirmacion" aria-describedby="texto-confirmacion"
-      (click)="$event.stopPropagation()">
-      <h2 id="titulo-confirmacion">¿Querés cancelar el turno?</h2>
-      <p id="texto-confirmacion">
-        Turno con {{ nombreMedico(turno) }}, el {{ diaSemana(turno.fechaHora) }}
-        {{ diaMes(turno.fechaHora) }} {{ mes(turno.fechaHora) }} a las {{ hora(turno.fechaHora) }}.
-      </p>
-      @if (errorCancelacion()) {
-        <p class="notice notice-error" role="alert">{{ errorCancelacion() }}</p>
-      }
-      <div class="acciones-confirmacion">
-        <button type="button" [disabled]="cancelando()" (click)="cerrarConfirmacion()">Volver</button>
-        <button type="button" class="boton-cancelar" [disabled]="cancelando()"
-          (click)="confirmarCancelacion()">
-          {{ cancelando() ? 'Cancelando...' : 'Confirmar cancelación' }}
-        </button>
-      </div>
-    </section>
-  </div>
+  <p-dialog [visible]="true" [modal]="true" [closable]="!cancelando()"
+    (onHide)="cerrarConfirmacion()" header="¿Querés cancelar el turno?"
+    [style]="{ width: 'min(100%, 480px)' }">
+    <p id="texto-confirmacion">
+      Turno con <strong>{{ nombreMedico(turno) }}</strong>, el {{ diaSemana(turno.fechaHora) }}
+      {{ diaMes(turno.fechaHora) }} {{ mes(turno.fechaHora) }} a las {{ hora(turno.fechaHora) }} hs.
+    </p>
+    @if (errorCancelacion()) {
+      <p-message severity="error" role="alert" [style]="{ display: 'block', 'margin': '12px 0' }">
+        {{ errorCancelacion() }}
+      </p-message>
+    }
+    <ng-template pTemplate="footer">
+      <p-button type="button" [outlined]="true" severity="secondary" [disabled]="cancelando()"
+        (onClick)="cerrarConfirmacion()" label="Volver" />
+      <p-button type="button" severity="danger" [disabled]="cancelando()"
+        [loading]="cancelando()" (onClick)="confirmarCancelacion()"
+        [label]="cancelando() ? 'Cancelando...' : 'Confirmar cancelación'" />
+    </ng-template>
+  </p-dialog>
 }

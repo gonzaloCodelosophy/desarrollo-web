@@ -2,12 +2,27 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TagModule } from 'primeng/tag';
+import { MessageModule } from 'primeng/message';
 import { MedicosService } from '../../../core/services/medicos.service';
 import type { Medico } from '../../../core/models/medico.model';
 
 @Component({
   selector: 'app-aranceles',
-  imports: [ReactiveFormsModule, DecimalPipe],
+  imports: [
+    ReactiveFormsModule,
+    DecimalPipe,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    InputNumberModule,
+    TagModule,
+    MessageModule,
+  ],
   templateUrl: './aranceles.html',
 })
 export class ArancelesComponent implements OnInit {

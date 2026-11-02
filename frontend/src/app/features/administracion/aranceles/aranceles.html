@@ -8,11 +8,15 @@
     </header>
 
     @if (mensajeExito()) {
-    <p class="alert alert-success" role="status">{{ mensajeExito() }}</p>
+    <p-message severity="success" role="status" [style]="{ display: 'block', 'margin-bottom': '16px' }">
+        {{ mensajeExito() }}
+    </p-message>
     }
 
     @if (mensajeError()) {
-    <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+    <p-message severity="error" role="alert" [style]="{ display: 'block', 'margin-bottom': '16px' }">
+        {{ mensajeError() }}
+    </p-message>
     }
 
     <div class="content-grid">
@@ -21,22 +25,16 @@
                 <h2 id="titulo-listado-medicos" class="card-title">Listado de médicos</h2>
                 <div class="form-group">
                     <label for="buscar-medico" class="sr-only">Buscar médico por nombre o matrícula</label>
-                    <input id="buscar-medico" type="search" class="form-control"
+                    <input id="buscar-medico" pInputText type="search"
                         placeholder="Buscar por nombre o matrícula..." [value]="busqueda()"
                         (input)="onBusquedaChange($event)" />
                 </div>
             </div>
 
             <div class="card-body">
-                @if (cargando()) {
-                <p class="loading-state" role="status">Cargando médicos…</p>
-                } @else if (medicosFiltrados().length === 0) {
-                <p class="empty-state">No se encontraron médicos que coincidan con la búsqueda.</p>
-                } @else {
                 <div class="table-container" tabindex="0" role="region" aria-label="Listado de médicos y aranceles">
-                    <table class="table">
-                        <caption class="sr-only">Médicos activos de la clínica y su valor de consulta</caption>
-                        <thead>
+                    <p-table [value]="medicosFiltrados()" [loading]="cargando()" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
                             <tr>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Especialidad</th>
@@ -45,9 +43,8 @@
                                 <th scope="col">Estado</th>
                                 <th scope="col">Acciones</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @for (medico of medicosFiltrados(); track medico.id) {
+                        </ng-template>
+                        <ng-template pTemplate="body" let-medico>
                             <tr>
                                 <td>
                                     <strong>Dr/a. {{ medico.nombres }} {{ medico.apellidos }}</strong>
@@ -58,25 +55,27 @@
                                     <strong>$ {{ medico.valorConsulta | number:'1.0-0' }}</strong>
                                 </td>
                                 <td>
-                                    <span class="badge badge-active">Activo</span>
+                                    <p-tag severity="success" value="Activo" />
                                 </td>
                                 <td>
                                     <div class="table-actions">
-                                        <button type="button" class="btn btn-sm"
-                                            [class.btn-primary]="medicoSeleccionado()?.id === medico.id"
-                                            [class.btn-outline]="medicoSeleccionado()?.id !== medico.id"
-                                            (click)="seleccionarMedico(medico)">
-                                            Editar precio
-                                        </button>
-
+                                        <p-button type="button" size="small"
+                                            [outlined]="medicoSeleccionado()?.id !== medico.id"
+                                            (onClick)="seleccionarMedico(medico)"
+                                            label="Editar precio" />
                                     </div>
                                 </td>
                             </tr>
-                            }
-                        </tbody>
-                    </table>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="6" class="table-empty">
+                                    No se encontraron médicos que coincidan con la búsqueda.
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
                 </div>
-                }
             </div>
         </section>
 
@@ -101,25 +100,22 @@
                 <form class="form" [formGroup]="form" (ngSubmit)="guardarCambios()">
                     <div class="form-group">
                         <label for="nuevo-precio" class="form-label form-required">Nuevo precio ($)</label>
-                        <input id="nuevo-precio" type="number" min="1" step="1" class="form-control"
-                            formControlName="valorConsulta" />
+                        <p-inputNumber inputId="nuevo-precio" formControlName="valorConsulta" [min]="1" [step]="1"
+                            [maxFractionDigits]="0" [fluid]="true" />
                         <span class="form-help">Ingresá el nuevo valor de la consulta (entero mayor a 0).</span>
 
                         @if (form.controls.valorConsulta.invalid && form.controls.valorConsulta.touched) {
-                        <span class="form-error" role="alert">
+                        <p-message severity="error" size="small" variant="simple">
                             Ingresá un valor entero válido mayor a 0 (sin decimales ni signos negativos).
-                        </span>
+                        </p-message>
                         }
                     </div>
 
-                    <div class="card-footer">
-                        <button type="button" class="btn btn-outline" [disabled]="guardando()"
-                            (click)="cancelarEdicion()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-primary" [disabled]="guardando() || form.invalid">
-                            {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
-                        </button>
+                    <div class="card-footer" style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--color-border); padding-top: 16px; margin-top: 8px;">
+                        <p-button [fluid]="true" type="button" label="Cancelar" [outlined]="true"
+                            [disabled]="guardando()" (onClick)="cancelarEdicion()" />
+                        <p-button [fluid]="true" type="submit" [disabled]="guardando() || form.invalid" [loading]="guardando()"
+                            [label]="guardando() ? 'Guardando...' : 'Guardar cambios'" />
                     </div>
                 </form>
                 } @else {

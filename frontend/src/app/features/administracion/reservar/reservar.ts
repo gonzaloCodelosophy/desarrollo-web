@@ -3,6 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { MedicosService } from '../../../core/services/medicos.service';
 import { ReservasService } from '../../../core/services/reservas.service';
 import { PacientesService } from '../../../core/services/pacientes.service';
@@ -23,7 +26,15 @@ const HORARIOS_DISPONIBLES: readonly string[] = [
 
 @Component({
   selector: 'app-reservar-admin',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    DecimalPipe,
+    DatePipe,
+    RouterLink,
+    InputTextModule,
+    ButtonModule,
+    MessageModule,
+  ],
   templateUrl: './reservar.html',
 })
 export class ReservarComponent implements OnInit {

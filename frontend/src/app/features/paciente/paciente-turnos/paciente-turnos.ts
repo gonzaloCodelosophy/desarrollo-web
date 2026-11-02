@@ -1,6 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MessageModule } from 'primeng/message';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { ReservasService } from '../../../core/services/reservas.service';
 import type { EstadoReserva, Reserva } from '../../../core/models/reserva.model';
 
@@ -8,7 +11,7 @@ type FiltroTurnos = 'proximos' | 'pasados' | 'cancelados';
 
 @Component({
   selector: 'app-paciente-turnos',
-  imports: [RouterLink],
+  imports: [RouterLink, MessageModule, ButtonModule, DialogModule],
   templateUrl: './paciente-turnos.html',
   styleUrl: './paciente-turnos.css',
 })
@@ -186,6 +189,7 @@ export class PacienteTurnosComponent implements OnInit {
     const valores = Object.fromEntries(partes.map(({ type, value }) => [type, value]));
     return `${valores['year']}-${valores['month']}-${valores['day']}`;
   }
+
   precio(valor: number): string {
     return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(valor);
   }

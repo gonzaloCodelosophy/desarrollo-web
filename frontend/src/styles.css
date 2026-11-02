@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
 
+/* ACLARACION IMPORTANTE, SE AÑADIERON ESTILOS PERSONALIZABLES PARA LOS COMPONENTES DE PRIMENG */
+
 /* Variables de color para modo oscuro y modo claro */
 :root,
 [data-theme='dark'] {
@@ -136,7 +138,7 @@ small,
 }
 
 /* Encabezado y navegación de la app */
-app-layout>header {
+app-layout > header {
   min-height: 68px;
   display: flex;
   align-items: center;
@@ -147,17 +149,17 @@ app-layout>header {
   border-bottom: 1px solid var(--color-border);
 }
 
-app-layout>header>span:first-child>svg {
+app-layout > header > span:first-child > svg {
   fill: var(--color-primary);
 }
 
-app-layout>header>div:nth-child(2) {
+app-layout > header > div:nth-child(2) {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-app-layout>header>div:nth-child(2)>span:first-child {
+app-layout > header > div:nth-child(2) > span:first-child {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 12px;
   text-transform: uppercase;
@@ -165,20 +167,20 @@ app-layout>header>div:nth-child(2)>span:first-child {
   font-weight: 400;
 }
 
-app-layout>header>div:nth-child(2)>span:last-child {
+app-layout > header > div:nth-child(2) > span:last-child {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 22px;
   font-weight: 700;
 }
 
-app-layout>header>span:nth-child(3) {
+app-layout > header > span:nth-child(3) {
   margin-left: auto;
   font-size: 14px;
   color: var(--color-text-secondary);
   font-weight: 700;
 }
 
-app-layout>nav {
+app-layout > nav {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -186,7 +188,7 @@ app-layout>nav {
   background-color: var(--color-sidebar);
 }
 
-app-layout>nav a {
+app-layout > nav a {
   display: inline-flex;
   align-items: center;
   min-height: 40px;
@@ -196,13 +198,13 @@ app-layout>nav a {
   font-size: 14px;
 }
 
-app-layout>nav a:hover {
+app-layout > nav a:hover {
   background-color: var(--color-surface);
 }
 
 /* Contenedores de página y grillas */
 .page-container,
-app-layout>main {
+app-layout > main {
   max-width: 1400px;
   margin: 0 auto;
   padding: 24px 28px;
@@ -382,6 +384,7 @@ label {
 
 .form-control,
 .form-select,
+.p-inputtext,
 input:not([type='checkbox']):not([type='radio']),
 select {
   width: 100%;
@@ -391,6 +394,23 @@ select {
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: 10px;
+}
+
+.p-inputtext {
+  background: var(--color-surface-secondary) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 10px !important;
+}
+
+.p-inputtext:focus {
+  outline: 2px solid var(--color-focus) !important;
+  outline-offset: 2px !important;
+  border-color: var(--color-focus) !important;
+}
+
+.p-inputtext::placeholder {
+  color: var(--color-text-secondary) !important;
 }
 
 .form-error,
@@ -443,7 +463,8 @@ select {
   background-color: var(--color-surface);
 }
 
-.table {
+.table,
+.p-datatable-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
@@ -451,25 +472,177 @@ select {
 }
 
 .table th,
-.table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--color-surface-secondary) !important;
+  color: var(--color-text-secondary) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  vertical-align: middle !important;
 }
 
-.table th {
-  background-color: var(--color-surface-secondary);
-  color: var(--color-text-secondary);
-  font-weight: 600;
-  font-size: 13px;
+.p-datatable .p-datatable-tbody > tr {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
 }
 
-.table tbody tr:hover {
-  background-color: var(--color-surface-secondary);
+.table td,
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  vertical-align: middle !important;
+  color: var(--color-text) !important;
 }
 
-.table tbody tr:last-child td {
-  border-bottom: 0;
+.table tbody tr:hover,
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: var(--color-surface-secondary) !important;
+}
+
+.table tbody tr:last-child td,
+.p-datatable .p-datatable-tbody > tr:last-child > td {
+  border-bottom: 0 !important;
+}
+
+.p-datatable {
+  background: var(--color-surface) !important;
+}
+
+.p-tag {
+  border-radius: 999px !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.p-tag.p-tag-success {
+  background: var(--color-success-bg) !important;
+  color: var(--color-success) !important;
+}
+
+.p-tag.p-tag-info {
+  background: var(--color-info-bg) !important;
+  color: var(--color-info) !important;
+}
+
+.p-tag.p-tag-danger {
+  background: var(--color-error-bg) !important;
+  color: var(--color-error) !important;
+}
+
+.p-tag.p-tag-secondary {
+  background: var(--color-muted-bg) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.p-button {
+  border-radius: 10px !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  min-height: 42px !important;
+  padding: 8px 18px !important;
+  font-size: 14px !important;
+}
+
+.p-button:not(.p-button-outlined):not(.p-button-danger):not(.p-button-success):not(.p-button-text) {
+  background: var(--color-primary) !important;
+  color: var(--color-on-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+}
+
+.p-button.p-button-success {
+  background: var(--color-success-bg) !important;
+  color: var(--color-success) !important;
+  border: 1px solid var(--color-success) !important;
+}
+
+.p-button.p-button-danger {
+  background: var(--color-error-bg) !important;
+  color: var(--color-error) !important;
+  border: 1px solid var(--color-error) !important;
+}
+
+.p-button.p-button-outlined {
+  background: transparent !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.p-button.p-button-outlined:hover {
+  background: var(--color-surface-secondary) !important;
+}
+
+.p-button.p-button-text.p-button-secondary {
+  background: transparent !important;
+  color: var(--color-text-secondary) !important;
+  border-color: transparent !important;
+}
+
+.p-button.p-button-sm {
+  min-height: 34px !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+}
+
+.p-message.p-message-success:not(.p-message-simple) {
+  background: var(--color-success-bg) !important;
+  color: var(--color-success) !important;
+  border: 1px solid var(--color-success) !important;
+  border-radius: 12px !important;
+}
+
+.p-message.p-message-error:not(.p-message-simple) {
+  background: var(--color-error-bg) !important;
+  color: var(--color-error) !important;
+  border: 1px solid var(--color-error) !important;
+  border-radius: 12px !important;
+}
+
+.p-message.p-message-simple {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-size: 13px !important;
+}
+
+.p-dialog {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+.p-dialog-header {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-bottom: 0 !important;
+  padding: 20px 20px 0 20px !important;
+}
+
+.p-dialog-title {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+}
+
+.p-dialog-content {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  padding: 14px 20px !important;
+}
+
+.p-dialog-footer {
+  background: var(--color-surface) !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: 16px 20px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
 }
 
 .table-empty {
@@ -635,9 +808,8 @@ select {
 }
 
 @media (max-width: 767px) {
-
   .page-container,
-  app-layout>main {
+  app-layout > main {
     padding: 12px;
   }
 
@@ -650,7 +822,8 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .table {
+  .table,
+  .p-datatable-table {
     min-width: 640px;
   }
 }

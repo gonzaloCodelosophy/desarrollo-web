@@ -29,7 +29,7 @@
                         <label for="buscar-paciente" class="form-label">
                             1. Buscar paciente (por nombre, apellido o DNI)
                         </label>
-                        <input id="buscar-paciente" type="search" class="form-control"
+                        <input id="buscar-paciente" pInputText type="search" class="form-control"
                             placeholder="Ej: 30000001, Rodríguez, Sofía..." [value]="busquedaPaciente()"
                             (input)="onBusquedaPaciente($event)" />
                     </div>
@@ -78,7 +78,7 @@
                         <label for="fecha-turno" class="form-label form-required">
                             3. Fecha del turno (máximo 30 días de anticipación)
                         </label>
-                        <input id="fecha-turno" type="date" class="form-control" formControlName="fecha"
+                        <input id="fecha-turno" pInputText type="date" class="form-control" formControlName="fecha"
                             [min]="fechaMinima" [max]="fechaMaxima" (change)="onFechaChange($event)" />
                         <span class="form-help">
                             Rango permitido: desde {{ fechaMinima | date:'dd/MM/yyyy' }} hasta {{ fechaMaxima |
@@ -121,29 +121,29 @@
                     </div>
 
                     <div class="card-footer">
-                        <a routerLink="/administracion/turnos" class="btn btn-outline">
-                            Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary"
-                            [disabled]="enviando() || form.invalid || !esFechaEnRangoValido(fechaSeleccionada())">
-                            {{ enviando() ? 'Confirmando reserva...' : 'Confirmar reserva' }}
-                        </button>
+                        <p-button type="button" [outlined]="true" label="Cancelar" (onClick)="irAListadoTurnos()" />
+                        <p-button type="submit"
+                            [disabled]="enviando() || form.invalid || !esFechaEnRangoValido(fechaSeleccionada())"
+                            [loading]="enviando()"
+                            [label]="enviando() ? 'Confirmando reserva...' : 'Confirmar reserva'" />
                     </div>
                 </form>
                 }
             </div>
 
             @if (mensajeExito()) {
-            <div class="alert alert-success" role="status">
-                <p>{{ mensajeExito() }}</p>
-                <button type="button" class="btn btn-sm btn-outline" (click)="irAListadoTurnos()">
-                    Ir al listado de turnos
-                </button>
-            </div>
+            <p-message severity="success" role="status" [style]="{ display: 'block', 'margin-top': '16px' }">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; flex-wrap: wrap;">
+                    <span>{{ mensajeExito() }}</span>
+                    <p-button [outlined]="true" size="small" (onClick)="irAListadoTurnos()" label="Ir al listado de turnos" />
+                </div>
+            </p-message>
             }
 
             @if (mensajeError()) {
-            <p class="alert alert-error" role="alert">{{ mensajeError() }}</p>
+            <p-message severity="error" role="alert" [style]="{ display: 'block', 'margin-top': '16px' }">
+                {{ mensajeError() }}
+            </p-message>
             }
 
         </section>

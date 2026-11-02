@@ -4,6 +4,9 @@ import { RouterLink } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Subscription, forkJoin, of } from "rxjs";
+import { InputTextModule } from "primeng/inputtext";
+import { ButtonModule } from "primeng/button";
+import { MessageModule } from "primeng/message";
 import { AuthService } from "../../core/auth/auth.service";
 import { MedicosService } from "../../core/services/medicos.service";
 import { PacientesService } from "../../core/services/pacientes.service";
@@ -13,7 +16,7 @@ import type { Paciente } from "../../core/models/paciente.model";
 
 @Component({
     selector: "app-reserva-turno",
-    imports: [FormsModule, RouterLink],
+    imports: [FormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule],
     templateUrl: "./reserva-turno.html",
     styleUrl: "./reserva-turno.css",
 })
